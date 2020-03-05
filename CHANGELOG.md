@@ -27,11 +27,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add basic component library setup
 - Add injectable session URL rewrite function to support proxies
 - Add POSTLogger for meeting sessions
+<<<<<<< HEAD
 - Integrate POSTLogger into the demo app
 - Add content share integration test
 - Enable POSTLogger for the serverless demo app
 - Add max-content-share query parameter to allow 2 content share at the same time
 - Add an integration test that checks only 2 content share are allowed
+=======
+- Integrate MeetingSessionPOSTLogger to demo app
+>>>>>>> 7e534a9... Integrate MeetingSessionPOSTLogger to demo app
 
 ### Changed
 - Add observer event for content sharing
@@ -61,8 +65,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fix integration test completion time writer
 - Fix the ping pong reconnection issue
 - Fix example code in the getting started guide
+<<<<<<< HEAD
 - Fix browser versions for integration tests
 - Fix present npm audit issues and automatically fix during build when possible
+=======
+>>>>>>> a31f41e... Fix example code in the getting started guide
 
 ## [1.1.0] - 2020-02-04
 
@@ -107,6 +114,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Trigger videoSendBandwidthDidChange and videoReceiveBandwidthDidChange for Safari
 - Do not disconnect video element with different srcObj when destroying video tile
 - Make meeting V2 the default demo meeting app
+- Stop content share if the media stream end
 
 ### Removed
 - Remove SDP class withPlanBSimulcast method

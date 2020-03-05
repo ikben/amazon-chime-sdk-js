@@ -30,6 +30,7 @@ import {
   Versioning,
   VideoTileState,
 } from '../../../../src/index';
+import MeetingSessionPOSTLogger from "../../../../src/logger/MeetingSessionPOSTLogger";
 
 class DemoTileOrganizer {
   private static MAX_TILES = 16;

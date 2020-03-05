@@ -6,6 +6,8 @@ demos/browser/*
 demos/serverless/*
 demos/videohelpdesk/*
 demos/components/*
+demos/device/*
+demos/components/*
 docs
 guides
 index.ts
