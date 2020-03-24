@@ -50,7 +50,11 @@ export default function StudentVideoGroup() {
   useEffect(() => {
     chime.audioVideo.addObserver({
       videoTileDidUpdate: (tileState: VideoTileState): void => {
-        if (!tileState.boundAttendeeId || tileState.localTile) {
+        if (
+          !tileState.boundAttendeeId ||
+          tileState.localTile ||
+          tileState.isContent
+        ) {
           return;
         }
         const index = acquireVideoIndex(tileState.tileId);

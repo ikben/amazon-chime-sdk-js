@@ -3,6 +3,7 @@ import {
   MeetingSessionStatusCode
 } from 'amazon-chime-sdk-js';
 import classNames from 'classnames/bind';
+import { ipcRenderer } from 'electron';
 import React, { useContext, useEffect, useRef, useState } from 'react';
 import { Link, useHistory, useLocation } from 'react-router-dom';
 
@@ -11,6 +12,7 @@ import getChimeContext from '../context/getChimeContext';
 import Controls from './Controls';
 import LoadingSpinner from './LoadingSpinner';
 import Roster from './Roster';
+import ScreenPicker from './ScreenPicker';
 import StudentVideoGroup from './StudentVideoGroup';
 import styles from './TeacherRoom.css';
 import TeacherVideo from './TeacherVideo';
@@ -28,6 +30,7 @@ export default function TeacherRoom() {
   const chime = useContext(getChimeContext());
   const [status, setStatus] = useState(Status.Loading);
   const [errorMesssage, setErrorMesssage] = useState(null);
+  const [isPickerEnabled, setIsPickerEnabled] = useState(false);
   const audioElement = useRef(null);
   const history = useHistory();
 
@@ -103,68 +106,84 @@ export default function TeacherRoom() {
       {status === Status.Loading && <LoadingSpinner />}
       {(status === Status.RoomReady || status === Status.Succeeded) && (
         <>
-          <div className={cx('left')}>
-            <div className={cx('remoteVideoGroup')}>
-              <StudentVideoGroup />
-            </div>
-            <div className={cx('localVideoContainer')}>
-              <Controls />
-              <TeacherVideo />
-            </div>
-          </div>
-          <div className={cx('right')}>
-            <div className={cx('roster')}>
-              <Roster />
-            </div>
-
-            <div className={cx('raiseHand')}>
-            </div>
-
-            <div className={cx('chat')}>
-            </div>
-
-            <div className={cx('raiseHand')}>
-              <form
-                className={cx('form')}
-              >
-                <input
-                  className={cx('chatInput')}
-                  onSubmit={event => {
-                    event.preventDefault();
+          <>
+            <div className={cx('left')}>
+              <div className={cx('remoteVideoGroup')}>
+                <StudentVideoGroup />
+              </div>
+              <div className={cx('localVideoContainer')}>
+                <Controls
+                  onClickShareButton={() => {
+                    setIsPickerEnabled(true);
                   }}
-                  onKeyUp={event => {
-                    event.preventDefault();
-                    if (event.keyCode === 13) {
-                      const message = event.target.value.trim();
-                      if (message !== '') {
-                        chime.sendMessage('chat-message', {
-                          attendeeId: chime.configuration.credentials.attendeeId,
-                          message: event.target.value
-                        });
-                      }
-                      event.target.value = '';
-                    }
-                  }}
-                  placeholder="Type a chat message"
                 />
-              </form>
-              <form
-                className={cx('form')}
-                onSubmit={event => {
-                  event.preventDefault();
-                  chime.sendMessage('raise-hand', {
-                    attendeeId: chime.configuration.credentials.attendeeId,
-                  });
-                }}
-              >
-                <button className={cx('button')} type="submit">
-                  Raise hand ✋
-                </button>
-              </form>
+                <TeacherVideo />
+              </div>
             </div>
+            <div className={cx('right')}>
+              <div className={cx('roster')}>
+                <Roster />
+              </div>
+              <div className={cx('chat')}>
+              	<div className={cx('raiseHand')}>
+	            </div>
 
+	            <div className={cx('chat')}>
+	            </div>
 
-          </div>
+	            <div className={cx('raiseHand')}>
+	              <form
+	                className={cx('form')}
+	              >
+	                <input
+	                  className={cx('chatInput')}
+	                  onSubmit={event => {
+	                    event.preventDefault();
+	                  }}
+	                  onKeyUp={event => {
+	                    event.preventDefault();
+	                    if (event.keyCode === 13) {
+	                      const message = event.target.value.trim();
+	                      if (message !== '') {
+	                        chime.sendMessage('chat-message', {
+	                          attendeeId: chime.configuration.credentials.attendeeId,
+	                          message: event.target.value
+	                        });
+	                      }
+	                      event.target.value = '';
+	                    }
+	                  }}
+	                  placeholder="Type a chat message"
+	                />
+	              </form>
+	              <form
+	                className={cx('form')}
+	                onSubmit={event => {
+	                  event.preventDefault();
+	                  chime.sendMessage('raise-hand', {
+	                    attendeeId: chime.configuration.credentials.attendeeId,
+	                  });
+	                }}
+	              >
+	                <button className={cx('button')} type="submit">
+	                  Raise hand ✋
+	                </button>
+	              </form>
+	            </div>
+              </div>
+            </div>
+          </>
+          {isPickerEnabled && (
+            <ScreenPicker
+              onClickShareButton={() => {
+                ipcRenderer.send('chime-enable-screen-share-mode');
+                setIsPickerEnabled(false);
+              }}
+              onClickCancelButton={() => {
+                setIsPickerEnabled(false);
+              }}
+            />
+          )}
         </>
       )}
       {status === Status.Failed && errorMesssage && (

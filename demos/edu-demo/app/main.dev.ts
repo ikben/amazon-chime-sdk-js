@@ -8,7 +8,7 @@
  * When running `yarn build` or `yarn build-main`, this file is compiled to
  * `./app/main.prod.js` using webpack. This gives us some performance wins.
  */
-import { app, BrowserWindow } from 'electron';
+import { app, BrowserWindow, ipcMain } from 'electron';
 import log from 'electron-log';
 import { autoUpdater } from 'electron-updater';
 import path from 'path';
@@ -99,6 +99,23 @@ const createWindow = async () => {
   // Remove this if your app does not use auto updates
   // eslint-disable-next-line
   new AppUpdater();
+
+  ipcMain.on('chime-enable-screen-share-mode', () => {
+    // alwaysOnTop over other fullscreen apps
+    // https://github.com/electron/electron/issues/10078#issuecomment-331581160
+    app.dock.hide();
+    mainWindow.setAlwaysOnTop(true, 'floating');
+    mainWindow.setVisibleOnAllWorkspaces(true);
+    mainWindow.setFullScreenable(false);
+    app.dock.show();
+  });
+
+  ipcMain.on('chime-disable-screen-share-mode', () => {
+    app.dock.show();
+    mainWindow.setAlwaysOnTop(false);
+    mainWindow.setVisibleOnAllWorkspaces(false);
+    mainWindow.setFullScreenable(true);
+  });
 };
 
 /**

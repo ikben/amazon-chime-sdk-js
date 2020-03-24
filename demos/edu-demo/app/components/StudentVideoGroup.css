@@ -4,6 +4,8 @@
   height: 100%;
   grid-gap: 1rem;
   padding: 1rem 1rem 0;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
 }
 
 .instruction {

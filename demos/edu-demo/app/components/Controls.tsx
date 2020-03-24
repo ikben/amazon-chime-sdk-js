@@ -13,7 +13,12 @@ enum VideoStatus {
   Enabled
 }
 
-export default function Controls() {
+type Props = {
+  onClickShareButton: () => void;
+};
+
+export default function Controls(props: Props) {
+  const { onClickShareButton } = props;
   const chime = useContext(getChimeContext());
   const history = useHistory();
   const [muted, setMuted] = useState(false);
@@ -67,7 +72,13 @@ export default function Controls() {
           <i className="fas fa-video-slash" />
         )}
       </button>
-      <button type="button" className={cx('shareButton')} onClick={() => {}}>
+      <button
+        type="button"
+        className={cx('shareButton')}
+        onClick={() => {
+          onClickShareButton();
+        }}
+      >
         <i className="fas fa-desktop" />
       </button>
       <button

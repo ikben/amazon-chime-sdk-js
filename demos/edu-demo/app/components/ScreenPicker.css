@@ -1,0 +1,190 @@
+.screenPicker {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 1;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(0.5rem);
+}
+
+.window {
+  display: flex;
+  flex-direction: column;
+  margin: auto;
+  width: var(--screen_picker_width);
+  height: var(--screen_picker_height);
+  background: var(--color_chalkboard);
+  border-radius: 0.25rem;
+  overflow: hidden;
+}
+
+.top {
+  flex: 0 0 auto;
+}
+
+.header {
+  font-size: 1.1rem;
+  font-weight: 400;
+  padding: 1rem 1.5rem;
+  margin: 0;
+}
+
+.tabs {
+  display: flex;
+  padding: 0 1.5rem;
+  font-size: 0.9rem;
+}
+
+.screenTab,
+.windowTab {
+  border: none;
+  border-bottom: 0.125rem solid transparent;
+  user-select: none;
+  cursor: pointer;
+  transition: color 0.1s;
+  padding: 0 0 0.25rem;
+  color: var(--color_darker_chalk);
+  background: transparent;
+  outline: none;
+  font-size: 0.9rem;
+}
+
+.screenTab.selected,
+.windowTab.selected {
+  color: var(--color_chalk);
+  border-bottom: 0.125rem solid var(--color_chalk);
+}
+
+.screenTab:hover,
+.windowTab:hover {
+  color: var(--color_chalk);
+}
+
+.windowTab {
+  margin-left: 1rem;
+}
+
+.middle {
+  flex: 1 1 auto;
+  overflow-y: scroll;
+  background: var(--color_slightly_light_chalkboard);
+  padding: 1.5rem;
+  display: grid;
+  grid-column-gap: 4rem;
+  grid-template-columns: repeat(2, 1fr);
+  grid-template-rows: minmax(min-content, max-content);
+}
+
+.middle.loading {
+  display: flex;
+  width: 100%;
+  height: 100%;
+  justify-content: center;
+  align-items: center;
+}
+
+.source {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  padding: 1rem;
+  cursor: pointer;
+  margin-bottom: 1rem;
+  outline: none;
+}
+
+.source:hover {
+  box-shadow: 0 0 0 0.5rem var(--color_darker_chalk);
+}
+
+.source.selected {
+  box-shadow: 0 0 0 0.5rem var(--color_chalk) !important;
+}
+
+.image {
+  flex-direction: column;
+  background-repeat: no-repeat;
+  background-size: contain;
+  background-position: center;
+  position: relative;
+  height: 12rem;
+}
+
+.image img {
+  max-height: 100%;
+  max-width: 100%;
+  margin: auto;
+  position: absolute;
+  transform: translate(-50%, -50%);
+  top: 50%;
+  left: 50%;
+}
+
+.caption {
+  width: 100%;
+  white-space: nowrap;
+  overflow: auto;
+  text-overflow: ellipsis;
+  text-align: center;
+  font-size: 0.9rem;
+  padding: 1rem 1rem 0;
+}
+
+.bottom {
+  display: flex;
+  flex: 0 0 5rem;
+  justify-content: flex-end;
+  align-items: center;
+}
+
+.buttonContainer {
+  display: flex;
+  margin-left: auto;
+  align-items: center;
+  padding: 0 1.5rem;
+}
+
+.cancelButton,
+.shareButton {
+  border: none;
+  border-radius: 0.25rem;
+  padding: 0.75rem;
+  font-size: 1.1rem;
+  font-weight: 500;
+  user-select: none;
+  width: 6rem;
+  border: 1px solid var(--color_chalk);
+}
+
+.cancelButton:hover,
+.shareButton.enabled:hover {
+  opacity: 0.8;
+}
+
+.shareButton {
+  color: var(--color_chalkboard);
+  background: var(--color_chalk);
+  opacity: 0.25;
+}
+
+.shareButton.enabled {
+  opacity: 1;
+  cursor: pointer;
+}
+
+.cancelButton {
+  color: var(--color_chalk);
+  border-color: var(--color_chalk);
+  background: transparent;
+  cursor: pointer;
+}
+
+.shareButton {
+  margin-left: 1rem;
+}

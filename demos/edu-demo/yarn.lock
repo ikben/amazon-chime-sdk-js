@@ -2415,8 +2415,10 @@ alphanum-sort@^1.0.0:
   resolved "https://registry.yarnpkg.com/alphanum-sort/-/alphanum-sort-1.0.2.tgz#97a1119649b211ad33691d9f9f486a8ec9fbe0a3"
   integrity sha1-l6ERlkmyEa0zaR2fn0hqjsn74KM=
 
-"amazon-chime-sdk-js@file:amazon-chime-sdk-js":
-  version "1.1.28"
+amazon-chime-sdk-js@^1.2.1:
+  version "1.2.1"
+  resolved "https://registry.yarnpkg.com/amazon-chime-sdk-js/-/amazon-chime-sdk-js-1.2.1.tgz#6a58d9018c01f9c9b29cced682966cd977d90304"
+  integrity sha512-JRAKadZfACLlyIklI7p/Oez41piqr9pwe2K7rIzyKKCkgHUraVpUdwGZau8NrOyie2cTWjmZ/HrIxRUCRwUZPw==
   dependencies:
     detect-browser "^4.7.0"
     protobufjs "~6.8.8"
