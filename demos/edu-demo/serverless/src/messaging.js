@@ -6,7 +6,7 @@ const ddb = new AWS.DynamoDB({ region: process.env.AWS_REGION });
 const chime = new AWS.Chime({ region: 'us-east-1' });
 chime.endpoint = new AWS.Endpoint('https://service.chime.aws.amazon.com/console');
 const { CONNECTIONS_TABLE_NAME } = process.env;
-const strictVerify = false; // TODO: set to true for production
+const strictVerify = true;
 
 exports.authorize = async (event, context, callback) => {
   console.log('authorize event:', JSON.stringify(event, null, 2));
