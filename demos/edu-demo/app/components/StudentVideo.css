@@ -1,7 +1,15 @@
 .studentVideo {
   display: none;
   position: relative;
-  background: black;
+  background: transparent;
+  overflow: hidden;
+}
+
+.studentVideo.roomMode {
+  border-radius: 0.25rem;
+}
+
+.studentVideo.screenShareMode {
   border-radius: 0.25rem;
 }
 
@@ -12,7 +20,6 @@
 .video {
   display: block;
   position: absolute;
-  border-radius: 0.25rem;
   top: 0;
   left: 0;
   width: 100%;
@@ -22,14 +29,29 @@
 
 .nameplate {
   z-index: 1;
-  display: flex;
   align-items: center;
   position: absolute;
   max-width: 95%;
   left: 50%;
   transform: translate(-50%, 0);
-  background-color: rgba(0, 0, 0, 0.5);
+  background-color: var(--color_black_medium_opacity);
   backdrop-filter: blur(0.5rem);
+}
+
+.studentVideo.roomMode .nameplate {
+  display: flex;
+}
+
+.studentVideo.screenShareMode .nameplate {
+  display: none;
+}
+
+.studentVideo.screenShareMode.large .nameplate {
+  display: flex !important;
+  padding: 0.2rem 0.2rem 0.2rem 0.3rem;
+  bottom: 0.25rem;
+  font-size: 0.75rem;
+  border-radius: 0.25rem;
 }
 
 .studentVideo.small .nameplate {
@@ -49,7 +71,7 @@
 .studentVideo.large .nameplate {
   padding: 0.5rem 0.75em 0.5em 1rem;
   bottom: 0.5rem;
-  font-size: 0.9rem;
+  font-size: 1rem;
   border-radius: 0.5rem;
 }
 
@@ -76,4 +98,40 @@
 
 .studentVideo.large .name + .muted {
   margin-left: 0.5rem;
+}
+
+.raisedHand {
+  z-index: 1;
+  position: absolute;
+  top: 0.25rem;
+  left: 0.25rem;
+  font-size: 2rem;
+  animation: shake 1.22s cubic-bezier(0.36, 0.07, 0.19, 0.97) infinite both;
+  transform: translate3d(0, 0, 0);
+  backface-visibility: hidden;
+  perspective: 1000px;
+  user-select: none;
+}
+
+@keyframes shake {
+  10%,
+  90% {
+    transform: translate3d(-0.5px, 0, 0);
+  }
+
+  20%,
+  80% {
+    transform: translate3d(1px, 0, 0);
+  }
+
+  30%,
+  50%,
+  70% {
+    transform: translate3d(-1.5px, 0, 0);
+  }
+
+  40%,
+  60% {
+    transform: translate3d(1.5px, 0, 0);
+  }
 }

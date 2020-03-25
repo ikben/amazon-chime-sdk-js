@@ -2,7 +2,11 @@ import classNames from 'classnames/bind';
 import React, { useContext, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 
+import routes from '../constants/routes.json';
 import getChimeContext from '../context/getChimeContext';
+import getUIStateContext from '../context/getUIStateContext';
+import ClassMode from '../enums/ClassMode';
+import ViewMode from '../enums/ViewMode';
 import styles from './Controls.css';
 
 const cx = classNames.bind(styles);
@@ -14,17 +18,26 @@ enum VideoStatus {
 }
 
 type Props = {
+  viewMode: ViewMode;
   onClickShareButton: () => void;
 };
 
 export default function Controls(props: Props) {
-  const { onClickShareButton } = props;
+  const { viewMode, onClickShareButton } = props;
   const chime = useContext(getChimeContext());
+  const [state] = useContext(getUIStateContext());
   const history = useHistory();
   const [muted, setMuted] = useState(false);
   const [videoStatus, setVideoStatus] = useState(VideoStatus.Disabled);
   return (
-    <div className={cx('controls')}>
+    <div
+      className={cx('controls', {
+        roomMode: viewMode === ViewMode.Room,
+        screenShareMode: viewMode === ViewMode.ScreenShare,
+        videoEnabled: videoStatus === VideoStatus.Enabled,
+        audioMuted: muted
+      })}
+    >
       <button
         type="button"
         className={cx('muteButton', {
@@ -72,26 +85,30 @@ export default function Controls(props: Props) {
           <i className="fas fa-video-slash" />
         )}
       </button>
-      <button
-        type="button"
-        className={cx('shareButton')}
-        onClick={() => {
-          onClickShareButton();
-        }}
-      >
-        <i className="fas fa-desktop" />
-      </button>
-      <button
-        type="button"
-        className={cx('endButton')}
-        onClick={() => {
-          chime.leaveRoom(true);
-          chime.leaveRoomMessaging();
-          history.push('/');
-        }}
-      >
-        <i className="fas fa-times" />
-      </button>
+      {state.classMode === ClassMode.Teacher && viewMode === ViewMode.Room && (
+        <button
+          type="button"
+          className={cx('shareButton')}
+          onClick={() => {
+            onClickShareButton();
+          }}
+        >
+          <i className="fas fa-desktop" />
+        </button>
+      )}
+      {viewMode === ViewMode.Room && (
+        <button
+          type="button"
+          className={cx('endButton')}
+          onClick={() => {
+            chime.leaveRoom(true);
+            chime.leaveRoomMessaging();
+            history.push(routes.HOME);
+          }}
+        >
+          <i className="fas fa-times" />
+        </button>
+      )}
     </div>
   );
 }

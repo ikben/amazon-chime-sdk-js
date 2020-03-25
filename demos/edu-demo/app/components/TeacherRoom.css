@@ -6,8 +6,15 @@
   justify-content: center;
 }
 
-.audio {
-  display: none;
+.teacherRoom.isModeTransitioning::after {
+  content: '';
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  background: var(--color_chalkboard);
+  z-index: 10;
 }
 
 .left {
@@ -19,14 +26,34 @@
 
 .remoteVideoGroup {
   flex: 1 1 auto;
+  overflow: hidden;
 }
 
 .localVideoContainer {
-  flex: 0 0 var(--local_video_container_height);
   display: flex;
   position: relative;
   align-items: center;
   justify-content: center;
+  flex: 0 0 var(--local_video_container_height);
+}
+
+.localVideo {
+  position: absolute;
+  right: 0.25rem;
+}
+
+.teacherRoom.screenShareMode .localVideo {
+  right: auto;
+  width: 100%;
+  height: 100%;
+  padding: 0.25rem;
+}
+
+.controls {
+}
+
+.teacherRoom.screenShareMode .controls {
+  z-index: 1;
 }
 
 .right {
@@ -38,9 +65,13 @@
   overflow: hidden;
 }
 
+.teacherRoom.screenShareMode .right {
+  display: none;
+}
+
 .roster {
   flex: 1 1 auto;
-  overflow-y: scroll;
+  overflow: hidden;
   height: 50%;
 }
 
@@ -51,36 +82,4 @@
   justify-content: center;
   align-items: center;
   height: 50%;
-}
-
-.error {
-  text-align: center;
-  max-width: 50%;
-}
-
-.errorMessage {
-  word-wrap: break-word;
-  overflow-wrap: break-word;
-  word-break: break-all;
-  font-size: 1.5rem;
-}
-
-.goHomeLink {
-  display: inline-block;
-  border: none;
-  border-radius: 0.25rem;
-  padding: 0.75rem 2rem;
-  font-size: 1.1rem;
-  font-weight: 500;
-  color: var(--color_chalkboard);
-  background: var(--color_chalk);
-  cursor: pointer;
-  transition: opacity 0.15s;
-  user-select: none;
-  text-decoration: none;
-  margin-top: 2.5rem;
-}
-
-.goHomeLink:hover {
-  opacity: 0.8;
 }

@@ -4,20 +4,21 @@ import {
   ConsoleLogger,
   ContentShareObserver,
   DefaultDeviceController,
+  DefaultDOMWebSocketFactory,
   DefaultMeetingSession,
   DefaultModality,
+  DefaultPromisedWebSocketFactory,
   DeviceChangeObserver,
+  FullJitterBackoff,
   LogLevel,
   MeetingSession,
   MeetingSessionConfiguration,
-  ReconnectingPromisedWebSocket,
-  DefaultPromisedWebSocketFactory,
-  DefaultDOMWebSocketFactory,
-  FullJitterBackoff
+  ReconnectingPromisedWebSocket
 } from 'amazon-chime-sdk-js';
 import React from 'react';
 
 import getChimeContext from '../context/getChimeContext';
+import MessageType from '../types/MessageType';
 import RosterType from '../types/RosterType';
 import getBaseUrl from '../utils/getBaseUrl';
 import getMessagingWssUrl from '../utils/getMessagingWssUrl';
@@ -36,11 +37,13 @@ class ChimeSdkWrapper
 
   roster: RosterType = {};
 
-  contentShareEnabled = false;
+  rosterUpdateCallbacks: RosterType[] = [];
 
   configuration: MeetingSessionConfiguration = null;
 
   messagingSocket: ReconnectingPromisedWebSocket = null;
+
+  messageUpdateCallbacks: MessageType[] = [];
 
   // eslint-disable-next-line
   createRoom = async (title: string, name: string, region: string): Promise<any> => {
@@ -58,7 +61,10 @@ class ChimeSdkWrapper
     }
 
     const { JoinInfo } = json;
-    this.configuration = new MeetingSessionConfiguration(JoinInfo.Meeting, JoinInfo.Attendee);
+    this.configuration = new MeetingSessionConfiguration(
+      JoinInfo.Meeting,
+      JoinInfo.Attendee
+    );
     await this.initializeMeetingSession(this.configuration);
 
     this.title = title;
@@ -93,6 +99,17 @@ class ChimeSdkWrapper
             muted: boolean | null,
             signalStrength: number | null
           ) => {
+            const baseAttendeeId = new DefaultModality(attendeeId).base();
+            if (baseAttendeeId !== attendeeId) {
+              if (
+                baseAttendeeId !==
+                this.meetingSession.configuration.credentials.attendeeId
+              ) {
+                // TODO: stop my content share
+              }
+              return;
+            }
+
             if (!this.roster[attendeeId]) {
               this.roster[attendeeId] = { name: '' };
             }
@@ -108,25 +125,13 @@ class ChimeSdkWrapper
               );
             }
             if (!this.roster[attendeeId].name) {
-              const baseAttendeeId = new DefaultModality(attendeeId).base();
               const response = await fetch(
                 `${getBaseUrl()}attendee?title=${encodeURIComponent(
                   this.title
-                )}&attendee=${encodeURIComponent(baseAttendeeId)}`
+                )}&attendee=${encodeURIComponent(attendeeId)}`
               );
               const json = await response.json();
-              let name = json.AttendeeInfo.Name;
-              if (baseAttendeeId !== attendeeId) {
-                name += ' «Content»';
-                if (
-                  baseAttendeeId !==
-                    this.meetingSession.configuration.credentials.attendeeId &&
-                  this.contentShareEnabled
-                ) {
-                  // TODO: Stop conte share
-                }
-              }
-              this.roster[attendeeId].name = name || '';
+              this.roster[attendeeId].name = json.AttendeeInfo.Name || '';
             }
             this.publishRosterUpdate();
           }
@@ -150,12 +155,10 @@ class ChimeSdkWrapper
     this.audioVideo.start();
   };
 
-  joinRoomMessaging = async (messageCallback: (type: string, payload: any) => void): Promise<void> => {
+  joinRoomMessaging = async (): Promise<void> => {
     const messagingUrl = `${getMessagingWssUrl()}?MeetingId=${
       this.configuration.meetingId
-    }&AttendeeId=${
-      this.configuration.credentials.attendeeId
-    }&JoinToken=${
+    }&AttendeeId=${this.configuration.credentials.attendeeId}&JoinToken=${
       this.configuration.credentials.joinToken
     }`;
     this.messagingSocket = new ReconnectingPromisedWebSocket(
@@ -163,24 +166,43 @@ class ChimeSdkWrapper
       [],
       'arraybuffer',
       new DefaultPromisedWebSocketFactory(new DefaultDOMWebSocketFactory()),
-      new FullJitterBackoff(1000, 0, 10000),
+      new FullJitterBackoff(1000, 0, 10000)
     );
+
     await this.messagingSocket.open(10000);
-    console.log('connected');
-    this.messagingSocket.addEventListener('message', (evt) => {
-      console.log('received message raw:', evt.data);
-      const data = JSON.parse(evt.data);
-      console.log('received message:', data);
-      messageCallback(data.type, data.payload);
+
+    this.messagingSocket.addEventListener('message', event => {
+      try {
+        const data = JSON.parse(event.data);
+        const { attendeeId } = data.payload;
+
+        let name;
+        if (this.roster[attendeeId]) {
+          name = this.roster[attendeeId].name;
+        }
+
+        this.publishMessageUpdate({
+          type: data.type,
+          payload: data.payload,
+          timestampMs: Date.now(),
+          name
+        });
+      } catch (error) {
+        // eslint-disable-next-line
+        console.error(error);
+      }
     });
   };
 
+  // eslint-disable-next-line
   sendMessage = (type: string, payload: any) => {
     if (!this.messagingSocket) {
       return;
     }
-    const message = {"message": "sendmessage", "data": JSON.stringify({type: type, payload: payload})};
-    console.log('sending message', message);
+    const message = {
+      message: 'sendmessage',
+      data: JSON.stringify({ type, payload })
+    };
     this.messagingSocket.send(JSON.stringify(message));
   };
 
@@ -207,16 +229,16 @@ class ChimeSdkWrapper
       this.name = null;
       this.region = null;
       this.roster = {};
-      this.contentShareEnabled = false;
       this.rosterUpdateCallbacks = [];
+      this.configuration = null;
+      this.messagingSocket = null;
+      this.messageUpdateCallbacks = [];
     }
   };
 
   leaveRoomMessaging = async (): Promise<void> => {
     await this.messagingSocket.close();
-  }
-
-  private rosterUpdateCallbacks: RosterType[] = [];
+  };
 
   subscribeToRosterUpdate = (callback: (roster: RosterType) => void) => {
     this.rosterUpdateCallbacks.push(callback);
@@ -230,12 +252,27 @@ class ChimeSdkWrapper
   };
 
   private publishRosterUpdate = () => {
-    const clonedRoster = {
-      ...this.roster
-    };
     for (let i = 0; i < this.rosterUpdateCallbacks.length; i += 1) {
       const callback = this.rosterUpdateCallbacks[i];
-      callback(clonedRoster);
+      callback(this.roster);
+    }
+  };
+
+  subscribeToMessageUpdate = (callback: (message: MessageType) => void) => {
+    this.messageUpdateCallbacks.push(callback);
+  };
+
+  unsubscribeFromMessageUpdate = (callback: (message: MessageType) => void) => {
+    const index = this.messageUpdateCallbacks.indexOf(callback);
+    if (index !== -1) {
+      this.messageUpdateCallbacks.splice(index, 1);
+    }
+  };
+
+  private publishMessageUpdate = (message: MessageType) => {
+    for (let i = 0; i < this.messageUpdateCallbacks.length; i += 1) {
+      const callback = this.messageUpdateCallbacks[i];
+      callback(message);
     }
   };
 }

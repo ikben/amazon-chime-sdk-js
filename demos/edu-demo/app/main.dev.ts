@@ -55,14 +55,18 @@ const createWindow = async () => {
     await installExtensions();
   }
 
+  const defaultWidth = 1024;
+  const defaultHeight = 768;
+
   mainWindow = new BrowserWindow({
     show: false,
-    width: 1024,
-    height: 728,
+    width: defaultWidth,
+    height: defaultHeight,
     center: true,
-    minWidth: 1024,
-    minHeight: 728,
+    minWidth: defaultWidth,
+    minHeight: defaultHeight,
     backgroundColor: '#252525',
+    fullscreenable: false,
     webPreferences:
       process.env.NODE_ENV === 'development' || process.env.E2E_BUILD === 'true'
         ? {
@@ -100,21 +104,35 @@ const createWindow = async () => {
   // eslint-disable-next-line
   new AppUpdater();
 
-  ipcMain.on('chime-enable-screen-share-mode', () => {
-    // alwaysOnTop over other fullscreen apps
-    // https://github.com/electron/electron/issues/10078#issuecomment-331581160
-    app.dock.hide();
+  ipcMain.on('chime-enable-screen-share-mode', event => {
+    const windowWidth = 150;
+    const windowHeight = defaultHeight;
     mainWindow.setAlwaysOnTop(true, 'floating');
-    mainWindow.setVisibleOnAllWorkspaces(true);
-    mainWindow.setFullScreenable(false);
-    app.dock.show();
+    mainWindow.setMinimumSize(windowWidth, windowHeight);
+    mainWindow.setSize(windowWidth, windowHeight);
+    mainWindow.setPosition(32, 64);
+    mainWindow.resizable = false;
+    mainWindow.minimizable = false;
+    mainWindow.maximizable = false;
+    mainWindow.setWindowButtonVisibility(false);
+    // In macOS Electron, the long title will be truncated.
+    mainWindow.setTitle('Edu');
+
+    event.reply('chime-enable-screen-share-mode-ack');
   });
 
-  ipcMain.on('chime-disable-screen-share-mode', () => {
-    app.dock.show();
+  ipcMain.on('chime-disable-screen-share-mode', event => {
     mainWindow.setAlwaysOnTop(false);
-    mainWindow.setVisibleOnAllWorkspaces(false);
-    mainWindow.setFullScreenable(true);
+    mainWindow.setMinimumSize(defaultWidth, defaultHeight);
+    mainWindow.setSize(defaultWidth, defaultHeight);
+    mainWindow.center();
+    mainWindow.resizable = true;
+    mainWindow.minimizable = true;
+    mainWindow.maximizable = true;
+    mainWindow.setWindowButtonVisibility(true);
+    mainWindow.setTitle('EduClassroom');
+
+    event.reply('chime-disable-screen-share-mode-ack');
   });
 };
 

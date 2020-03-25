@@ -1,5 +1,6 @@
 {
   "HOME": "/",
   "LOGIN": "/login",
+  "CREATE_OR_JOIN": "/create-or-join",
   "TEACHER_ROOM": "/teacher-room"
 }

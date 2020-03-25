@@ -1,11 +1,7 @@
 .teacherVideo {
   display: none;
-  position: absolute;
-  right: 1rem;
-  bottom: 1rem;
-  z-index: 1;
-  width: calc(var(--local_video_container_height) - 2rem);
-  height: calc(var(--local_video_container_height) - 2rem);
+  width: calc(var(--local_video_container_height) - 0.5rem);
+  height: calc(var(--local_video_container_height) - 0.5rem);
   background: #000;
   border-radius: 0.25rem;
   overflow: hidden;

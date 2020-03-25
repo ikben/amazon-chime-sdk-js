@@ -10,10 +10,14 @@
   --screen_picker_width: 800px;
   --screen_picker_height: 600px;
   --color_chalk: #fafafa;
+  --color_slightly_dark_chalk: #dedede;
   --color_darker_chalk: #9e9e9e;
   --color_chalkboard: #252525;
   --color_slightly_light_chalkboard: #2d2d2d;
+  --color_light_chalkboard: #454545;
   --color_dark_pen: #333;
+  --color_warm_red: #d62f12;
+  --color_black_medium_opacity: rgba(0, 0, 0, 0.6);
 }
 
 *,

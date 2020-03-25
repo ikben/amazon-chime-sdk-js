@@ -2,15 +2,18 @@ import React from 'react';
 import { hot } from 'react-hot-loader/root';
 import { HashRouter } from 'react-router-dom';
 
+import ChimeProvider from '../providers/ChimeProvider';
+import UIStateProvider from '../providers/UIStateProvider';
 import Routes from '../Routes';
-import ChimeProvider from './ChimeProvider';
 
 const Root = () => (
-  <ChimeProvider>
-    <HashRouter>
-      <Routes />
-    </HashRouter>
-  </ChimeProvider>
+  <HashRouter>
+    <ChimeProvider>
+      <UIStateProvider>
+        <Routes />
+      </UIStateProvider>
+    </ChimeProvider>
+  </HashRouter>
 );
 
 export default hot(Root);

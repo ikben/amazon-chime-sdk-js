@@ -56,3 +56,4 @@ package.json
 
 # Chime SDK
 amazon-chime-sdk-js
+serverless/src/handlers.js

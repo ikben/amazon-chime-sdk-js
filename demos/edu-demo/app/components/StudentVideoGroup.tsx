@@ -3,6 +3,9 @@ import classNames from 'classnames/bind';
 import React, { useCallback, useContext, useEffect, useState } from 'react';
 
 import getChimeContext from '../context/getChimeContext';
+import getRosterContext from '../context/getRosterContext';
+import ViewMode from '../enums/ViewMode';
+import useRaisedHandeAttendees from '../hooks/useRaisedHandeAttendees';
 import RosterAttendeeType from '../types/RosterAttendeeType';
 import StudentVideo, { Size } from './StudentVideo';
 import styles from './StudentVideoGroup.css';
@@ -10,10 +13,16 @@ import styles from './StudentVideoGroup.css';
 const cx = classNames.bind(styles);
 const MAX_STUDENT_VIDEOS = 16;
 
-export default function StudentVideoGroup() {
+type Props = {
+  viewMode: ViewMode;
+};
+
+export default function StudentVideoGroup(props: Props) {
+  const { viewMode } = props;
   const chime = useContext(getChimeContext());
+  const roster = useContext(getRosterContext());
   const [visibleIndices, setVisibleIndices] = useState({});
-  const [roster, setRoster] = useState({});
+  const raisedHandAttendees = useRaisedHandeAttendees();
   const videoElements: HTMLVideoElement[] = [];
   const tiles: { [index: number]: number } = {};
 
@@ -68,11 +77,6 @@ export default function StudentVideoGroup() {
             boundAttendeeId: tileState.boundAttendeeId
           }
         }));
-        setTimeout(() => {
-          setRoster({
-            ...chime.roster
-          });
-        }, 2000);
       },
       videoTileWasRemoved: (tileId: number): void => {
         const index = releaseVideoIndex(tileId);
@@ -82,16 +86,6 @@ export default function StudentVideoGroup() {
         }));
       }
     });
-  }, []);
-
-  useEffect(() => {
-    const callback = (newRoster: RosterType) => {
-      setRoster(newRoster);
-    };
-    chime.subscribeToRosterUpdate(callback);
-    return () => {
-      chime.unsubscribeFromRosterUpdate(callback);
-    };
   }, []);
 
   const getSize = (): Size => {
@@ -108,27 +102,37 @@ export default function StudentVideoGroup() {
     <div
       className={cx(
         'studentVideoGroup',
-        `studentVideoGroup-${numberOfVisibleIndices}`
+        `studentVideoGroup-${numberOfVisibleIndices}`,
+        {
+          roomMode: viewMode === ViewMode.Room,
+          screenShareMode: viewMode === ViewMode.ScreenShare
+        }
       )}
     >
       {numberOfVisibleIndices === 0 && (
-        <div className={cx('instruction')}>{`Hi ${chime.name}`}</div>
+        <div className={cx('instruction')}>No video</div>
       )}
       {Array.from(Array(MAX_STUDENT_VIDEOS).keys()).map((key, index) => {
         const visibleIndex = visibleIndices[index];
         let rosterAttendee: RosterAttendeeType = {};
-        if (visibleIndex) {
+        let raisedHand = false;
+        if (visibleIndex && roster) {
           rosterAttendee = roster[visibleIndex.boundAttendeeId];
+          if (raisedHandAttendees) {
+            raisedHand = raisedHandAttendees.has(visibleIndex.boundAttendeeId);
+          }
         }
         return (
           <StudentVideo
             key={key}
+            viewMode={viewMode}
             enabled={!!visibleIndex}
             videoElementRef={useCallback((element: HTMLVideoElement) => {
               videoElements[index] = element;
             }, [])}
             size={getSize()}
             rosterAttendee={rosterAttendee}
+            raisedHand={raisedHand}
           />
         );
       })}

@@ -1,8 +1,7 @@
 import classNames from 'classnames/bind';
 import { desktopCapturer } from 'electron';
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
-import getChimeContext from '../context/getChimeContext';
 import LoadingSpinner from './LoadingSpinner';
 import styles from './ScreenPicker.css';
 
@@ -14,15 +13,14 @@ enum ShareType {
 }
 
 type Props = {
-  onClickShareButton: () => void;
+  onClickShareButton: (selectedSourceId: string) => void;
   onClickCancelButton: () => void;
 };
 
 export default function ScreenPicker(props: Props) {
   const { onClickCancelButton, onClickShareButton } = props;
-  const chime = useContext(getChimeContext());
   const [sources, setSources] = useState(null);
-  const [shareType, setShareType] = useState(ShareType.Screen);
+  const [shareType, setShareType] = useState(ShareType.Window);
   const [selectedSourceId, setSelectedSourceId] = useState(null);
 
   useEffect(() => {
@@ -43,6 +41,10 @@ export default function ScreenPicker(props: Props) {
 
   const { screenSources, windowSources } = (sources || []).reduce(
     (result, source) => {
+      if (source.name === document.title) {
+        return result;
+      }
+
       if (source.id.startsWith('screen')) {
         result.screenSources.push(source);
       } else {
@@ -72,6 +74,17 @@ export default function ScreenPicker(props: Props) {
           <div className={cx('tabs')}>
             <button
               type="button"
+              className={cx('windowTab', {
+                selected: shareType === ShareType.Window
+              })}
+              onClick={() => {
+                setShareType(ShareType.Window);
+              }}
+            >
+              Application window
+            </button>
+            <button
+              type="button"
               className={cx('screenTab', {
                 selected: shareType === ShareType.Screen
               })}
@@ -81,19 +94,6 @@ export default function ScreenPicker(props: Props) {
             >
               Your entire screen
             </button>
-            <button
-              type="button"
-              className={cx('windowTab', {
-                selected: shareType === ShareType.Window
-              })}
-              onClick={() => {
-                setShareType(ShareType.Window);
-              }}
-            >
-              {`Application window${
-                sources ? ` (${windowSources.length})` : ``
-              }`}
-            </button>
           </div>
         </div>
         <div
@@ -102,7 +102,11 @@ export default function ScreenPicker(props: Props) {
           })}
         >
           {!sources && <LoadingSpinner />}
-          {selectedSources &&
+          {sources && selectedSources && !selectedSources.length && (
+            <div className={cx('noScreen')}>No screen</div>
+          )}
+          {sources &&
+            selectedSources &&
             selectedSources.map(source => (
               <div
                 key={source.id}
@@ -122,7 +126,6 @@ export default function ScreenPicker(props: Props) {
                 <div className={cx('caption')}>{source.name}</div>
               </div>
             ))}
-          {!selectedSources && <div>Unavailable</div>}
         </div>
         <div className={cx('bottom')}>
           <div className={cx('buttonContainer')}>
@@ -141,17 +144,8 @@ export default function ScreenPicker(props: Props) {
               className={cx('shareButton', {
                 enabled: !!selectedSourceId
               })}
-              onClick={async () => {
-                try {
-                  await chime.audioVideo.startContentShareFromScreenCapture(
-                    selectedSourceId
-                  );
-                } catch (error) {
-                  // eslint-disable-next-line
-                  console.error(error);
-                } finally {
-                  onClickShareButton();
-                }
+              onClick={() => {
+                onClickShareButton(selectedSourceId);
               }}
             >
               Share

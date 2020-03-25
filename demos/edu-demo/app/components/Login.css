@@ -1,57 +1,61 @@
 .login {
   display: flex;
-  align-items: center;
   justify-content: center;
+  align-items: center;
   height: 100%;
+}
+
+.content {
   color: var(--color_dark_pen);
-  background: var(--color_chalkboard);
+  width: var(--screen_picker_width);
+  background-color: var(--color_chalk);
+  border-radius: 0.25rem;
+  padding: 5rem 5rem 6rem;
 }
 
 .title {
-  font-size: 1.5rem;
-  font-weight: 500;
-  text-align: center;
   margin: 0 0 1rem;
 }
 
-.formWrapper {
-  width: 400px;
-  background: white;
-  margin: auto;
+.selection {
+  display: flex;
+}
+
+.selection div {
+  width: 50%;
+}
+
+.selection div + div {
+  margin-left: 3rem;
+}
+
+.selection h2 {
+  font-size: 1.4rem;
+}
+
+.selection ul {
+  padding-left: 1.5rem;
+  font-size: 1.1rem;
+}
+
+.selection li + li {
+  margin-top: 0.5rem;
+}
+
+.selection button {
   border: none;
   border-radius: 0.25rem;
-  padding: 3rem 2rem;
-}
-
-.form {
-  width: 100%;
-}
-
-.titleInput,
-.nameInput {
-  display: block;
-  width: 100%;
-  margin-bottom: 0.75rem;
   padding: 0.75rem 1rem;
-  font-size: 1rem;
-  border-radius: 0.25rem;
-  border: 1px solid #e4e4e4;
-}
-
-.button {
-  width: 100%;
-  border: none;
-  border-radius: 0.25rem;
-  padding: 0.75rem;
   font-size: 1.1rem;
   font-weight: 500;
-  color: white;
-  background: #272727;
+  color: var(--color_chalk);
+  background: var(--color_chalkboard);
   cursor: pointer;
-  transition: opacity 0.15s;
+  transition: background-color 0.15s;
   user-select: none;
+  margin-top: 0.75rem;
 }
 
-.button:hover {
+.selection button:hover {
   background: #111;
 }

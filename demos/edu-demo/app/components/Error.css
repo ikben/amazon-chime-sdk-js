@@ -1,0 +1,31 @@
+.error {
+  text-align: center;
+  max-width: 50%;
+}
+
+.errorMessage {
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  word-break: break-word;
+  font-size: 1.5rem;
+}
+
+.goHomeLink {
+  display: inline-block;
+  border: none;
+  border-radius: 0.25rem;
+  padding: 0.75rem 2rem;
+  font-size: 1.1rem;
+  font-weight: 500;
+  color: var(--color_chalkboard);
+  background: var(--color_chalk);
+  cursor: pointer;
+  transition: opacity 0.15s;
+  user-select: none;
+  text-decoration: none;
+  margin-top: 2.5rem;
+}
+
+.goHomeLink:hover {
+  opacity: 0.8;
+}

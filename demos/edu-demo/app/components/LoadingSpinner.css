@@ -23,7 +23,7 @@
   margin: 0 auto;
   width: 15%;
   height: 15%;
-  background-color: #fff;
+  background-color: var(--color_chalk);
   border-radius: 100%;
   animation: circleFadeDelay 1.2s infinite ease-in-out both;
 }

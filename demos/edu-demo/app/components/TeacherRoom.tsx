@@ -1,123 +1,82 @@
-import {
-  MeetingSessionStatus,
-  MeetingSessionStatusCode
-} from 'amazon-chime-sdk-js';
 import classNames from 'classnames/bind';
 import { ipcRenderer } from 'electron';
-import React, { useContext, useEffect, useRef, useState } from 'react';
-import { Link, useHistory, useLocation } from 'react-router-dom';
+import React, { useContext, useState } from 'react';
 
-import routes from '../constants/routes.json';
 import getChimeContext from '../context/getChimeContext';
+import getMeetingStatusContext from '../context/getMeetingStatusContext';
+import MeetingStatus from '../enums/MeetingStatus';
+import ViewMode from '../enums/ViewMode';
+import Chat from './Chat';
 import Controls from './Controls';
+import Error from './Error';
 import LoadingSpinner from './LoadingSpinner';
 import Roster from './Roster';
 import ScreenPicker from './ScreenPicker';
+import ScreenShareHeader from './ScreenShareHeader';
 import StudentVideoGroup from './StudentVideoGroup';
 import styles from './TeacherRoom.css';
 import TeacherVideo from './TeacherVideo';
 
 const cx = classNames.bind(styles);
 
-enum Status {
-  Loading,
-  RoomReady,
-  Succeeded,
-  Failed
-}
-
 export default function TeacherRoom() {
   const chime = useContext(getChimeContext());
-  const [status, setStatus] = useState(Status.Loading);
-  const [errorMesssage, setErrorMesssage] = useState(null);
+  const { meetingStatus, errorMessage } = useContext(getMeetingStatusContext());
+  const [viewMode, setViewMode] = useState(ViewMode.Room);
+  const [isModeTransitioning, setIsModeTransitioning] = useState(false);
   const [isPickerEnabled, setIsPickerEnabled] = useState(false);
-  const audioElement = useRef(null);
-  const history = useHistory();
 
-  const query = new URLSearchParams(useLocation().search);
-  const title = query.get('title');
-  const name = query.get('name');
-  const region = query.get('region');
-
-  useEffect(() => {
-    const createRoom = async () => {
+  const stopContentShare = async () => {
+    setIsModeTransitioning(true);
+    await new Promise(resolve => setTimeout(resolve, 200));
+    ipcRenderer.on('chime-disable-screen-share-mode-ack', () => {
       try {
-        await chime.createRoom(title, name, region);
-        setStatus(Status.RoomReady);
+        chime.audioVideo.stopContentShare();
       } catch (error) {
         // eslint-disable-next-line
         console.error(error);
-        setErrorMesssage(error.message);
-        setStatus(Status.Failed);
+      } finally {
+        setViewMode(ViewMode.Room);
+        setIsModeTransitioning(false);
       }
-    };
-    createRoom();
-  }, []);
-
-  useEffect(() => {
-    const joinRoom = async () => {
-      try {
-        await chime.audioVideo.addObserver({
-          audioVideoDidStart: (): void => {
-            setStatus(Status.Succeeded);
-          },
-          audioVideoDidStop: (sessionStatus: MeetingSessionStatus): void => {
-            if (
-              sessionStatus.statusCode() ===
-              MeetingSessionStatusCode.AudioCallEnded
-            ) {
-              history.push('/');
-            }
-          }
-        });
-        await chime.joinRoom(audioElement.current);
-        await chime.joinRoomMessaging((type: string, payload: any) => {
-          console.log('received message', type, payload);
-          if (type === 'raise-hand') {
-            console.log('raise hand received', payload);
-            document.getElementsByClassName(cx('chat'))[0].innerHTML += `
-            <br/>
-            ${chime.roster[payload.attendeeId].name} raised their hand ✋
-            `
-          } else if (type === 'chat-message') {
-            console.log('chat message received', payload);
-            document.getElementsByClassName(cx('chat'))[0].innerHTML += `
-            <br/>
-            ${chime.roster[payload.attendeeId].name}: ${payload.message}
-            `
-          }
-        });
-      } catch (error) {
-        // eslint-disable-next-line
-        console.error(error);
-        setErrorMesssage(error.message);
-        setStatus(Status.Failed);
-      }
-    };
-    if (status === Status.RoomReady) {
-      joinRoom();
-    }
-  }, [status]);
+    });
+    ipcRenderer.send('chime-disable-screen-share-mode');
+  };
 
   return (
-    <div className={cx('teacherRoom')}>
-      {/* eslint-disable-next-line */}
-      <audio ref={audioElement} className={cx('audio')} />
-      {status === Status.Loading && <LoadingSpinner />}
-      {(status === Status.RoomReady || status === Status.Succeeded) && (
+    <div
+      className={cx('teacherRoom', {
+        roomMode: viewMode === ViewMode.Room,
+        screenShareMode: viewMode === ViewMode.ScreenShare,
+        isModeTransitioning
+      })}
+    >
+      {meetingStatus === MeetingStatus.Loading && <LoadingSpinner />}
+      {meetingStatus === MeetingStatus.Failed && (
+        <Error errorMessage={errorMessage} />
+      )}
+      {meetingStatus === MeetingStatus.Succeeded && (
         <>
           <>
             <div className={cx('left')}>
+              {viewMode === ViewMode.ScreenShare && (
+                <ScreenShareHeader onClickStopButton={stopContentShare} />
+              )}
               <div className={cx('remoteVideoGroup')}>
-                <StudentVideoGroup />
+                <StudentVideoGroup viewMode={viewMode} />
               </div>
               <div className={cx('localVideoContainer')}>
-                <Controls
-                  onClickShareButton={() => {
-                    setIsPickerEnabled(true);
-                  }}
-                />
-                <TeacherVideo />
+                <div className={cx('controls')}>
+                  <Controls
+                    viewMode={viewMode}
+                    onClickShareButton={() => {
+                      setIsPickerEnabled(true);
+                    }}
+                  />
+                </div>
+                <div className={cx('localVideo')}>
+                  <TeacherVideo />
+                </div>
               </div>
             </div>
             <div className={cx('right')}>
@@ -125,59 +84,33 @@ export default function TeacherRoom() {
                 <Roster />
               </div>
               <div className={cx('chat')}>
-              	<div className={cx('raiseHand')}>
-	            </div>
-
-	            <div className={cx('chat')}>
-	            </div>
-
-	            <div className={cx('raiseHand')}>
-	              <form
-	                className={cx('form')}
-	              >
-	                <input
-	                  className={cx('chatInput')}
-	                  onSubmit={event => {
-	                    event.preventDefault();
-	                  }}
-	                  onKeyUp={event => {
-	                    event.preventDefault();
-	                    if (event.keyCode === 13) {
-	                      const message = event.target.value.trim();
-	                      if (message !== '') {
-	                        chime.sendMessage('chat-message', {
-	                          attendeeId: chime.configuration.credentials.attendeeId,
-	                          message: event.target.value
-	                        });
-	                      }
-	                      event.target.value = '';
-	                    }
-	                  }}
-	                  placeholder="Type a chat message"
-	                />
-	              </form>
-	              <form
-	                className={cx('form')}
-	                onSubmit={event => {
-	                  event.preventDefault();
-	                  chime.sendMessage('raise-hand', {
-	                    attendeeId: chime.configuration.credentials.attendeeId,
-	                  });
-	                }}
-	              >
-	                <button className={cx('button')} type="submit">
-	                  Raise hand ✋
-	                </button>
-	              </form>
-	            </div>
+                <Chat />
               </div>
             </div>
           </>
           {isPickerEnabled && (
             <ScreenPicker
-              onClickShareButton={() => {
+              onClickShareButton={async (selectedSourceId: string) => {
+                setIsModeTransitioning(true);
+                await new Promise(resolve => setTimeout(resolve, 200));
+                ipcRenderer.on(
+                  'chime-enable-screen-share-mode-ack',
+                  async () => {
+                    try {
+                      setIsPickerEnabled(false);
+                      await chime.audioVideo.startContentShareFromScreenCapture(
+                        selectedSourceId
+                      );
+                      setViewMode(ViewMode.ScreenShare);
+                      setIsModeTransitioning(false);
+                    } catch (error) {
+                      // eslint-disable-next-line
+                      console.error(error);
+                      await stopContentShare();
+                    }
+                  }
+                );
                 ipcRenderer.send('chime-enable-screen-share-mode');
-                setIsPickerEnabled(false);
               }}
               onClickCancelButton={() => {
                 setIsPickerEnabled(false);
@@ -185,14 +118,6 @@ export default function TeacherRoom() {
             />
           )}
         </>
-      )}
-      {status === Status.Failed && errorMesssage && (
-        <div className={cx('error')}>
-          <div className={cx('errorMessage')}>{errorMesssage}</div>
-          <Link className={cx('goHomeLink')} to={routes.HOME}>
-            Take me home
-          </Link>
-        </div>
       )}
     </div>
   );

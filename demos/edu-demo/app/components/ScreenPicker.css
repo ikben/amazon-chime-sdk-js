@@ -29,7 +29,7 @@
 }
 
 .header {
-  font-size: 1.1rem;
+  font-size: 1.5rem;
   font-weight: 400;
   padding: 1rem 1.5rem;
   margin: 0;
@@ -38,7 +38,6 @@
 .tabs {
   display: flex;
   padding: 0 1.5rem;
-  font-size: 0.9rem;
 }
 
 .screenTab,
@@ -52,7 +51,7 @@
   color: var(--color_darker_chalk);
   background: transparent;
   outline: none;
-  font-size: 0.9rem;
+  font-size: 1rem;
 }
 
 .screenTab.selected,
@@ -66,7 +65,7 @@
   color: var(--color_chalk);
 }
 
-.windowTab {
+.screenTab {
   margin-left: 1rem;
 }
 
@@ -87,6 +86,14 @@
   height: 100%;
   justify-content: center;
   align-items: center;
+}
+
+.noScreen {
+  color: var(--color_darker_chalk);
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
 }
 
 .source {
@@ -132,7 +139,7 @@
   overflow: auto;
   text-overflow: ellipsis;
   text-align: center;
-  font-size: 0.9rem;
+  font-size: 1rem;
   padding: 1rem 1rem 0;
 }
 
@@ -155,7 +162,7 @@
   border: none;
   border-radius: 0.25rem;
   padding: 0.75rem;
-  font-size: 1.1rem;
+  font-size: 1rem;
   font-weight: 500;
   user-select: none;
   width: 6rem;

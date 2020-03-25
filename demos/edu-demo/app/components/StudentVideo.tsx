@@ -1,6 +1,7 @@
 import classNames from 'classnames/bind';
 import React from 'react';
 
+import ViewMode from '../enums/ViewMode';
 import RosterAttendeeType from '../types/RosterAttendeeType';
 import styles from './StudentVideo.css';
 
@@ -13,23 +14,29 @@ export enum Size {
 }
 
 type Props = {
+  viewMode: ViewMode;
   enabled: boolean;
   videoElementRef: Function;
   size: Size;
   rosterAttendee?: RosterAttendeeType;
+  raisedHand?: boolean;
 };
 
 export default function StudentVideo(props: Props) {
   const {
+    viewMode,
     enabled,
     videoElementRef,
     size = Size.Large,
-    rosterAttendee = {}
+    rosterAttendee = {},
+    raisedHand
   } = props;
   const { name, muted } = rosterAttendee;
   return (
     <div
       className={cx('studentVideo', {
+        roomMode: viewMode === ViewMode.Room,
+        screenShareMode: viewMode === ViewMode.ScreenShare,
         studentVideoEnabled: enabled,
         small: size === Size.Small,
         medium: size === Size.Medium,
@@ -49,6 +56,13 @@ export default function StudentVideo(props: Props) {
               )}
             </div>
           )}
+        </div>
+      )}
+      {raisedHand && (
+        <div className={cx('raisedHand')}>
+          <span role="img" aria-label="Raised hand">
+            ✋
+          </span>
         </div>
       )}
     </div>
