@@ -1,6 +1,7 @@
 import classNames from 'classnames/bind';
 import { ipcRenderer } from 'electron';
 import React, { useContext, useState } from 'react';
+import Modal from 'react-modal';
 
 import getChimeContext from '../context/getChimeContext';
 import getMeetingStatusContext from '../context/getMeetingStatusContext';
@@ -18,6 +19,8 @@ import styles from './TeacherRoom.css';
 import TeacherVideo from './TeacherVideo';
 
 const cx = classNames.bind(styles);
+
+Modal.setAppElement('body');
 
 export default function TeacherRoom() {
   const chime = useContext(getChimeContext());
@@ -88,7 +91,15 @@ export default function TeacherRoom() {
               </div>
             </div>
           </>
-          {isPickerEnabled && (
+          <Modal
+            isOpen={isPickerEnabled}
+            contentLabel="Screen picker"
+            className={cx('modal')}
+            overlayClassName={cx('modalOverlay')}
+            onRequestClose={() => {
+              setIsPickerEnabled(false);
+            }}
+          >
             <ScreenPicker
               onClickShareButton={async (selectedSourceId: string) => {
                 setIsModeTransitioning(true);
@@ -116,7 +127,7 @@ export default function TeacherRoom() {
                 setIsPickerEnabled(false);
               }}
             />
-          )}
+          </Modal>
         </>
       )}
     </div>
