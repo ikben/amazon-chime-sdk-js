@@ -5,7 +5,7 @@ import App from './components/App';
 import CreateOrJoin from './components/CreateOrJoin';
 import Home from './components/Home';
 import Login from './components/Login';
-import TeacherRoom from './components/TeacherRoom';
+import Classroom from './components/Classroom';
 import routes from './constants/routes.json';
 import getUIStateContext from './context/getUIStateContext';
 import MeetingStatusProvider from './providers/MeetingStatusProvider';
@@ -30,7 +30,7 @@ export default function Routes() {
         <PrivateRoute path={routes.TEACHER_ROOM}>
           <MeetingStatusProvider>
             <RosterProvider>
-              <TeacherRoom />
+              <Classroom />
             </RosterProvider>
           </MeetingStatusProvider>
         </PrivateRoute>

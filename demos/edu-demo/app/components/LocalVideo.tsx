@@ -3,11 +3,11 @@ import classNames from 'classnames/bind';
 import React, { useContext, useEffect, useRef, useState } from 'react';
 
 import getChimeContext from '../context/getChimeContext';
-import styles from './TeacherVideo.css';
+import styles from './LocalVideo.css';
 
 const cx = classNames.bind(styles);
 
-export default function TeacherVideo() {
+export default function LocalVideo() {
   const [enabled, setEnabled] = useState(false);
   const chime = useContext(getChimeContext());
   const videoElement = useRef(null);
@@ -29,8 +29,8 @@ export default function TeacherVideo() {
 
   return (
     <div
-      className={cx('teacherVideo', {
-        teacherVideoEnabled: enabled
+      className={cx('localVideo', {
+        enabled
       })}
     >
       <video muted ref={videoElement} className={cx('video')} />

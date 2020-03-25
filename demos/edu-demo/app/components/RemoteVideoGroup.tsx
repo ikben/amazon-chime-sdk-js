@@ -7,17 +7,17 @@ import getRosterContext from '../context/getRosterContext';
 import ViewMode from '../enums/ViewMode';
 import useRaisedHandeAttendees from '../hooks/useRaisedHandeAttendees';
 import RosterAttendeeType from '../types/RosterAttendeeType';
-import StudentVideo, { Size } from './StudentVideo';
-import styles from './StudentVideoGroup.css';
+import RemoteVideo, { Size } from './RemoteVideo';
+import styles from './RemoteVideoGroup.css';
 
 const cx = classNames.bind(styles);
-const MAX_STUDENT_VIDEOS = 16;
+const MAX_REMOTE_VIDEOS = 16;
 
 type Props = {
   viewMode: ViewMode;
 };
 
-export default function StudentVideoGroup(props: Props) {
+export default function RemoteVideoGroup(props: Props) {
   const { viewMode } = props;
   const chime = useContext(getChimeContext());
   const roster = useContext(getRosterContext());
@@ -27,12 +27,12 @@ export default function StudentVideoGroup(props: Props) {
   const tiles: { [index: number]: number } = {};
 
   const acquireVideoIndex = (tileId: number): number => {
-    for (let index = 0; index < MAX_STUDENT_VIDEOS; index += 1) {
+    for (let index = 0; index < MAX_REMOTE_VIDEOS; index += 1) {
       if (tiles[index] === tileId) {
         return index;
       }
     }
-    for (let index = 0; index < MAX_STUDENT_VIDEOS; index += 1) {
+    for (let index = 0; index < MAX_REMOTE_VIDEOS; index += 1) {
       if (!(index in tiles)) {
         tiles[index] = tileId;
         return index;
@@ -42,7 +42,7 @@ export default function StudentVideoGroup(props: Props) {
   };
 
   const releaseVideoIndex = (tileId: number): number => {
-    for (let index = 0; index < MAX_STUDENT_VIDEOS; index += 1) {
+    for (let index = 0; index < MAX_REMOTE_VIDEOS; index += 1) {
       if (tiles[index] === tileId) {
         delete tiles[index];
         return index;
@@ -101,8 +101,8 @@ export default function StudentVideoGroup(props: Props) {
   return (
     <div
       className={cx(
-        'studentVideoGroup',
-        `studentVideoGroup-${numberOfVisibleIndices}`,
+        'remoteVideoGroup',
+        `remoteVideoGroup-${numberOfVisibleIndices}`,
         {
           roomMode: viewMode === ViewMode.Room,
           screenShareMode: viewMode === ViewMode.ScreenShare
@@ -112,7 +112,7 @@ export default function StudentVideoGroup(props: Props) {
       {numberOfVisibleIndices === 0 && (
         <div className={cx('instruction')}>No video</div>
       )}
-      {Array.from(Array(MAX_STUDENT_VIDEOS).keys()).map((key, index) => {
+      {Array.from(Array(MAX_REMOTE_VIDEOS).keys()).map((key, index) => {
         const visibleIndex = visibleIndices[index];
         let rosterAttendee: RosterAttendeeType = {};
         let raisedHand = false;
@@ -123,7 +123,7 @@ export default function StudentVideoGroup(props: Props) {
           }
         }
         return (
-          <StudentVideo
+          <RemoteVideo
             key={key}
             viewMode={viewMode}
             enabled={!!visibleIndex}

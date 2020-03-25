@@ -14,15 +14,15 @@ import LoadingSpinner from './LoadingSpinner';
 import Roster from './Roster';
 import ScreenPicker from './ScreenPicker';
 import ScreenShareHeader from './ScreenShareHeader';
-import StudentVideoGroup from './StudentVideoGroup';
-import styles from './TeacherRoom.css';
-import TeacherVideo from './TeacherVideo';
+import RemoteVideoGroup from './RemoteVideoGroup';
+import styles from './Classroom.css';
+import LocalVideo from './LocalVideo';
 
 const cx = classNames.bind(styles);
 
 Modal.setAppElement('body');
 
-export default function TeacherRoom() {
+export default function Classroom() {
   const chime = useContext(getChimeContext());
   const { meetingStatus, errorMessage } = useContext(getMeetingStatusContext());
   const [viewMode, setViewMode] = useState(ViewMode.Room);
@@ -48,7 +48,7 @@ export default function TeacherRoom() {
 
   return (
     <div
-      className={cx('teacherRoom', {
+      className={cx('classroom', {
         roomMode: viewMode === ViewMode.Room,
         screenShareMode: viewMode === ViewMode.ScreenShare,
         isModeTransitioning
@@ -66,7 +66,7 @@ export default function TeacherRoom() {
                 <ScreenShareHeader onClickStopButton={stopContentShare} />
               )}
               <div className={cx('remoteVideoGroup')}>
-                <StudentVideoGroup viewMode={viewMode} />
+                <RemoteVideoGroup viewMode={viewMode} />
               </div>
               <div className={cx('localVideoContainer')}>
                 <div className={cx('controls')}>
@@ -78,7 +78,7 @@ export default function TeacherRoom() {
                   />
                 </div>
                 <div className={cx('localVideo')}>
-                  <TeacherVideo />
+                  <LocalVideo />
                 </div>
               </div>
             </div>

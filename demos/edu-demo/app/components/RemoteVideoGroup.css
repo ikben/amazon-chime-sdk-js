@@ -1,0 +1,87 @@
+.remoteVideoGroup {
+  display: grid;
+  position: relative;
+  height: 100%;
+}
+
+.remoteVideoGroup.roomMode {
+  grid-gap: 0.25rem;
+  padding: 0.25rem 0.25rem 0;
+}
+
+.remoteVideoGroup.screenShareMode {
+  grid-gap: 0.25rem;
+  padding: 0 0.25rem;
+  grid-template-columns: repeat(2, 1fr);
+  grid-template-rows: repeat(8, 1fr);
+}
+
+/* Room mode */
+
+.remoteVideoGroup.roomMode.remoteVideoGroup-1 {
+  grid-template-columns: repeat(1, 1fr);
+  grid-template-rows: repeat(1, 1fr);
+}
+
+.remoteVideoGroup.roomMode.remoteVideoGroup-2,
+.remoteVideoGroup.roomMode.remoteVideoGroup-3,
+.remoteVideoGroup.roomMode.remoteVideoGroup-4 {
+  grid-template-columns: repeat(2, 1fr);
+  grid-template-rows: repeat(2, 1fr);
+}
+
+.remoteVideoGroup.roomMode.remoteVideoGroup-5,
+.remoteVideoGroup.roomMode.remoteVideoGroup-6 {
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(3, 1fr);
+}
+
+.remoteVideoGroup.roomMode.remoteVideoGroup-7,
+.remoteVideoGroup.roomMode.remoteVideoGroup-8,
+.remoteVideoGroup.roomMode.remoteVideoGroup-9 {
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(3, 1fr);
+}
+
+.remoteVideoGroup.roomMode.remoteVideoGroup-10,
+.remoteVideoGroup.roomMode.remoteVideoGroup-11,
+.remoteVideoGroup.roomMode.remoteVideoGroup-12 {
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(4, 1fr);
+}
+
+.remoteVideoGroup.roomMode.remoteVideoGroup-13,
+.remoteVideoGroup.roomMode.remoteVideoGroup-14,
+.remoteVideoGroup.roomMode.remoteVideoGroup-15,
+.remoteVideoGroup.roomMode.remoteVideoGroup-16 {
+  grid-template-columns: repeat(4, 1fr);
+  grid-template-rows: repeat(4, 1fr);
+}
+
+/* Screen share mode */
+
+.remoteVideoGroup.screenShareMode.remoteVideoGroup-1,
+.remoteVideoGroup.screenShareMode.remoteVideoGroup-2,
+.remoteVideoGroup.screenShareMode.remoteVideoGroup-3,
+.remoteVideoGroup.screenShareMode.remoteVideoGroup-4 {
+  grid-template-columns: repeat(1, 1fr);
+  grid-template-rows: repeat(4, 1fr);
+}
+
+/* Child elements */
+
+.instruction {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  text-align: center;
+  color: var(--color_darker_chalk);
+}
+
+.remoteVideoGroup.roomMode .instruction {
+}
+
+.remoteVideoGroup.screenShareMode .instruction {
+  font-size: 1rem;
+}

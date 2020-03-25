@@ -1,4 +1,4 @@
-.teacherVideo {
+.localVideo {
   display: none;
   width: calc(var(--local_video_container_height) - 0.5rem);
   height: calc(var(--local_video_container_height) - 0.5rem);
@@ -7,8 +7,8 @@
   overflow: hidden;
 }
 
-.teacherVideoEnabled {
-  display: block;
+.localVideo.enabled {
+  display: block !important;
 }
 
 .video {

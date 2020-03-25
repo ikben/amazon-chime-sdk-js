@@ -1,4 +1,4 @@
-.teacherRoom {
+.classroom {
   display: flex;
   background: var(--color_chalkboard);
   height: 100%;
@@ -6,7 +6,7 @@
   justify-content: center;
 }
 
-.teacherRoom.isModeTransitioning::after {
+.classroom.isModeTransitioning::after {
   content: '';
   position: fixed;
   top: 0;
@@ -42,7 +42,7 @@
   right: 0.25rem;
 }
 
-.teacherRoom.screenShareMode .localVideo {
+.classroom.screenShareMode .localVideo {
   right: auto;
   width: 100%;
   height: 100%;
@@ -52,7 +52,7 @@
 .controls {
 }
 
-.teacherRoom.screenShareMode .controls {
+.classroom.screenShareMode .controls {
   z-index: 1;
 }
 
@@ -65,7 +65,7 @@
   overflow: hidden;
 }
 
-.teacherRoom.screenShareMode .right {
+.classroom.screenShareMode .right {
   display: none;
 }
 

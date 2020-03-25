@@ -3,7 +3,7 @@ import React from 'react';
 
 import ViewMode from '../enums/ViewMode';
 import RosterAttendeeType from '../types/RosterAttendeeType';
-import styles from './StudentVideo.css';
+import styles from './RemoteVideo.css';
 
 const cx = classNames.bind(styles);
 
@@ -22,7 +22,7 @@ type Props = {
   raisedHand?: boolean;
 };
 
-export default function StudentVideo(props: Props) {
+export default function RemoteVideo(props: Props) {
   const {
     viewMode,
     enabled,
@@ -34,10 +34,10 @@ export default function StudentVideo(props: Props) {
   const { name, muted } = rosterAttendee;
   return (
     <div
-      className={cx('studentVideo', {
+      className={cx('remoteVideo', {
         roomMode: viewMode === ViewMode.Room,
         screenShareMode: viewMode === ViewMode.ScreenShare,
-        studentVideoEnabled: enabled,
+        enabled,
         small: size === Size.Small,
         medium: size === Size.Medium,
         large: size === Size.Large

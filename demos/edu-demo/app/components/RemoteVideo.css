@@ -1,20 +1,20 @@
-.studentVideo {
+.remoteVideo {
   display: none;
   position: relative;
   background: transparent;
   overflow: hidden;
 }
 
-.studentVideo.roomMode {
+.remoteVideo.roomMode {
   border-radius: 0.25rem;
 }
 
-.studentVideo.screenShareMode {
+.remoteVideo.screenShareMode {
   border-radius: 0.25rem;
 }
 
-.studentVideoEnabled {
-  display: block;
+.remoteVideo.enabled {
+  display: block !important;
 }
 
 .video {
@@ -38,15 +38,15 @@
   backdrop-filter: blur(0.5rem);
 }
 
-.studentVideo.roomMode .nameplate {
+.remoteVideo.roomMode .nameplate {
   display: flex;
 }
 
-.studentVideo.screenShareMode .nameplate {
+.remoteVideo.screenShareMode .nameplate {
   display: none;
 }
 
-.studentVideo.screenShareMode.large .nameplate {
+.remoteVideo.screenShareMode.large .nameplate {
   display: flex !important;
   padding: 0.2rem 0.2rem 0.2rem 0.3rem;
   bottom: 0.25rem;
@@ -54,21 +54,21 @@
   border-radius: 0.25rem;
 }
 
-.studentVideo.small .nameplate {
+.remoteVideo.small .nameplate {
   padding: 0.2rem 0.2rem 0.2rem 0.3rem;
   bottom: 0.25rem;
   font-size: 0.75rem;
   border-radius: 0.25rem;
 }
 
-.studentVideo.medium .nameplate {
+.remoteVideo.medium .nameplate {
   padding: 0.25rem 0.3rem 0.25rem 0.5rem;
   bottom: 0.25rem;
   font-size: 0.8rem;
   border-radius: 0.5rem;
 }
 
-.studentVideo.large .nameplate {
+.remoteVideo.large .nameplate {
   padding: 0.5rem 0.75em 0.5em 1rem;
   bottom: 0.5rem;
   font-size: 1rem;
@@ -88,15 +88,15 @@
   text-align: center;
 }
 
-.studentVideo.small .name + .muted {
+.remoteVideo.small .name + .muted {
   margin-left: 0.25rem;
 }
 
-.studentVideo.medium .name + .muted {
+.remoteVideo.medium .name + .muted {
   margin-left: 0.25rem;
 }
 
-.studentVideo.large .name + .muted {
+.remoteVideo.large .name + .muted {
   margin-left: 0.5rem;
 }
 
