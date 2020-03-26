@@ -44,7 +44,7 @@ export default function Controls(props: Props) {
       })}
     >
       {state.classMode === ClassMode.Teacher && viewMode === ViewMode.Room && (
-        <Tooltip placement="top" tooltip={focus ? 'Turn on focus' : 'Turn off focus'}>
+        <Tooltip placement="top" tooltip={focus ? 'Turn off focus' : 'Turn on focus'}>
           <button
             type="button"
             className={cx('focusButton', {
