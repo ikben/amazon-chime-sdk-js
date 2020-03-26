@@ -69,10 +69,15 @@
   display: none;
 }
 
+.deviceSwitcher {
+  flex: 1 1 auto;
+  height: 11%;
+}
+
 .roster {
   flex: 1 1 auto;
-  overflow: hidden;
-  height: 50%;
+  overflow-y: scroll;
+  height: 39%;
 }
 
 .chat {

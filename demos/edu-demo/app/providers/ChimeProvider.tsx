@@ -22,8 +22,9 @@ import MessageType from '../types/MessageType';
 import RosterType from '../types/RosterType';
 import getBaseUrl from '../utils/getBaseUrl';
 import getMessagingWssUrl from '../utils/getMessagingWssUrl';
+import DeviceType from '../types/DeviceType';
 
-class ChimeSdkWrapper
+export class ChimeSdkWrapper
   implements AudioVideoObserver, ContentShareObserver, DeviceChangeObserver {
   meetingSession: MeetingSession;
 
@@ -34,6 +35,14 @@ class ChimeSdkWrapper
   name: string;
 
   region: string;
+
+  currentAudioInputDevice: DeviceType = { label: 'Unavailable', value: '' };
+  currentAudioOutputDevice: DeviceType = { label: 'Unavailable', value: '' };
+  currentVideoInputDevice: DeviceType = { label: 'Unavailable', value: '' };
+
+  audioInputDevices: DeviceType[] = [];
+  audioOutputDevices: DeviceType[] = [];
+  videoInputDevices: DeviceType[] = [];
 
   roster: RosterType = {};
 
@@ -83,6 +92,30 @@ class ChimeSdkWrapper
       deviceController
     );
     this.audioVideo = this.meetingSession.audioVideo;
+
+    (await this.audioVideo.listAudioInputDevices()).forEach(
+      (mediaDeviceInfo: MediaDeviceInfo) => {
+        this.audioInputDevices.push({
+          label: mediaDeviceInfo.label,
+          value: mediaDeviceInfo.deviceId
+        });
+      });
+    (await this.audioVideo.listAudioOutputDevices()).forEach(
+      (mediaDeviceInfo: MediaDeviceInfo) => {
+        this.audioOutputDevices.push({
+          label: mediaDeviceInfo.label,
+          value: mediaDeviceInfo.deviceId
+        });
+      });
+    (await this.audioVideo.listVideoInputDevices()).forEach(
+      (mediaDeviceInfo: MediaDeviceInfo) => {
+        this.videoInputDevices.push({
+          label: mediaDeviceInfo.label,
+          value: mediaDeviceInfo.deviceId
+        });
+      });
+    this.audioVideo.addDeviceChangeObserver(this);
+
     this.audioVideo.realtimeSubscribeToAttendeeIdPresence(
       (presentAttendeeId: string, present: boolean): void => {
         if (!present) {
@@ -150,7 +183,27 @@ class ChimeSdkWrapper
     );
 
     const audioInputs = await this.audioVideo.listAudioInputDevices();
-    await this.audioVideo.chooseAudioInputDevice(audioInputs[0].deviceId);
+    if (audioInputs && audioInputs.length > 0 &&  audioInputs[0].deviceId) {
+      this.currentAudioInputDevice = { label: audioInputs[0].label, value: audioInputs[0].deviceId };
+      await this.audioVideo.chooseAudioInputDevice(audioInputs[0].deviceId);
+    }
+
+    const audioOutputs = await this.audioVideo.listAudioOutputDevices();
+    if (audioOutputs && audioOutputs.length > 0 && audioOutputs[0].deviceId) {
+      this.currentAudioOutputDevice = { label: audioOutputs[0].label, value: audioOutputs[0].deviceId };
+      await this.audioVideo.chooseAudioOutputDevice(audioOutputs[0].deviceId);
+    }
+
+    const videoInputs = await this.audioVideo.listVideoInputDevices();
+    if (videoInputs && videoInputs.length > 0 && videoInputs[0].deviceId) {
+      this.currentVideoInputDevice = { label: videoInputs[0].label, value: videoInputs[0].deviceId };
+      await this.audioVideo.chooseVideoInputDevice(videoInputs[0].deviceId);
+    }
+    
+    this.devicesUpdatedCallbacks.forEach((devicesUpdatedCallback: Function) => {
+      devicesUpdatedCallback();
+    });
+
     this.audioVideo.bindAudioElement(element);
     this.audioVideo.start();
   };
@@ -238,7 +291,72 @@ class ChimeSdkWrapper
 
   leaveRoomMessaging = async (): Promise<void> => {
     await this.messagingSocket.close();
+  }
+
+  private devicesUpdatedCallbacks: ((devices: DeviceType[]) => void)[] = [];
+
+  subscribeToDevicesUpdated = (
+    devicesUpdatedCallback: () => void) => {
+    this.devicesUpdatedCallbacks.push(devicesUpdatedCallback);
   };
+
+  unsubscribeFromDevicesUpdated = (
+    devicesUpdatedCallback: () => void) => {
+    let index = this.devicesUpdatedCallbacks.indexOf(devicesUpdatedCallback);
+    if (index !== -1) {
+      this.devicesUpdatedCallbacks.splice(index, 1);
+    }
+  };
+
+  /**
+   * Called when audio inputs are changed.
+   */
+  audioInputsChanged?(freshAudioInputDeviceList?: MediaDeviceInfo[]): void {
+    this.audioInputDevices = [];
+    freshAudioInputDeviceList?.forEach((mediaDeviceInfo: MediaDeviceInfo) => {
+      this.audioInputDevices.push({
+          label: mediaDeviceInfo.label,
+          value: mediaDeviceInfo.deviceId
+        });
+    });
+    this.devicesUpdatedCallbacks.forEach((devicesUpdatedCallback: Function) => {
+      devicesUpdatedCallback();
+    });
+  }
+
+  /**
+   * Called when audio outputs are changed.
+   */
+  audioOutputsChanged?(freshAudioOutputDeviceList?: MediaDeviceInfo[]): void {
+    this.audioOutputDevices = [];
+    freshAudioOutputDeviceList?.forEach((mediaDeviceInfo: MediaDeviceInfo) => {
+      this.audioOutputDevices.push({
+          label: mediaDeviceInfo.label,
+          value: mediaDeviceInfo.deviceId
+        });
+    });
+    this.devicesUpdatedCallbacks.forEach((devicesUpdatedCallback: Function) => {
+      devicesUpdatedCallback();
+    });
+  }
+
+  /**
+   * Called when video inputs are changed.
+   */
+  videoInputsChanged?(freshVideoInputDeviceList?: MediaDeviceInfo[]): void {
+    this.videoInputDevices = [];
+    freshVideoInputDeviceList?.forEach((mediaDeviceInfo: MediaDeviceInfo) => {
+      this.videoInputDevices.push({
+          label: mediaDeviceInfo.label,
+          value: mediaDeviceInfo.deviceId
+        });
+    });
+    this.devicesUpdatedCallbacks.forEach((devicesUpdatedCallback: Function) => {
+      devicesUpdatedCallback();
+    });
+  }
+
+  private rosterUpdateCallbacks: RosterType[] = [];
 
   subscribeToRosterUpdate = (callback: (roster: RosterType) => void) => {
     this.rosterUpdateCallbacks.push(callback);

@@ -17,6 +17,7 @@ import ScreenShareHeader from './ScreenShareHeader';
 import RemoteVideoGroup from './RemoteVideoGroup';
 import styles from './Classroom.css';
 import LocalVideo from './LocalVideo';
+import DeviceSwitcher from './DeviceSwitcher';
 
 const cx = classNames.bind(styles);
 
@@ -83,6 +84,9 @@ export default function Classroom() {
               </div>
             </div>
             <div className={cx('right')}>
+              <div className={cx('deviceSwitcher')}>
+                <DeviceSwitcher />
+              </div>
               <div className={cx('roster')}>
                 <Roster />
               </div>
