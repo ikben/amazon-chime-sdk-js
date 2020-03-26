@@ -174,6 +174,14 @@ ${cssStyle}
   packageJson.build.appId = `com.amazonaws.services.chime.sdk.classroom.demo.${appName}`;
   fs.writeFileSync(rootDir + '/package.json', JSON.stringify(packageJson, null, 2));
 
+  let mainDevTs = fs.readFileSync(rootDir + '/app/main.dev.ts', 'utf8');
+  mainDevTs = mainDevTs.replace(/setTitle.*?[;]/g, `setTitle('${appName}');`)
+  fs.writeFileSync(rootDir + '/app/main.dev.ts', mainDevTs);
+
+  let appHtml = fs.readFileSync(rootDir + '/app/app.html', 'utf8');
+  appHtml = appHtml.replace(/[<]title[>].*?[<][/]title[>]/g, `<title>${appName}</title>`);
+  fs.writeFileSync(rootDir + '/app/app.html', appHtml);
+
   spawnOrFail('sam', ['package', '--s3-bucket', `${bucket}`,
                       `--output-template-file`, `build/packaged.yaml`,
                       '--region',  `${region}`]);

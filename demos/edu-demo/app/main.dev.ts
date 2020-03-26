@@ -115,8 +115,8 @@ const createWindow = async () => {
     mainWindow.minimizable = false;
     mainWindow.maximizable = false;
     mainWindow.setWindowButtonVisibility(false);
-    // In macOS Electron, the long title will be truncated.
-    mainWindow.setTitle('Edu');
+    // In macOS Electron, long titles may be truncated.
+    mainWindow.setTitle('MyClassroom');
 
     event.reply('chime-enable-screen-share-mode-ack');
   });
@@ -130,7 +130,7 @@ const createWindow = async () => {
     mainWindow.minimizable = true;
     mainWindow.maximizable = true;
     mainWindow.setWindowButtonVisibility(true);
-    mainWindow.setTitle('EduClassroom');
+    mainWindow.setTitle('MyClassroom');
 
     event.reply('chime-disable-screen-share-mode-ack');
   });
