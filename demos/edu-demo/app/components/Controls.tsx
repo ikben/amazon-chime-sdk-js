@@ -63,7 +63,7 @@ export default function Controls(props: Props) {
             {focus ? (
               <i className="fas fa-street-view" />
             ) : (
-              <i className="fas fa-users" />
+              <i className="fas fa-street-view" />
             )}
           </button>
         </Tooltip>
