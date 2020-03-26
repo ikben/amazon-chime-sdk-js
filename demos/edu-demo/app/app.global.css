@@ -3,6 +3,7 @@
  *        See https://github.com/webpack-contrib/sass-loader#imports
  */
 @import '~@fortawesome/fontawesome-free/css/all.css';
+@import '~rc-tooltip/assets/bootstrap.css';
 
 :root {
   --local_video_container_height: 150px;

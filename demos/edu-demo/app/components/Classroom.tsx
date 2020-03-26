@@ -22,9 +22,8 @@ import ScreenShareHeader from './ScreenShareHeader';
 
 const cx = classNames.bind(styles);
 
-Modal.setAppElement('body');
-
 export default function Classroom() {
+  Modal.setAppElement('body');
   const chime = useContext(getChimeContext());
   const { meetingStatus, errorMessage } = useContext(getMeetingStatusContext());
   const [isContentShareEnabled, setIsContentShareEnabled] = useState(false);
