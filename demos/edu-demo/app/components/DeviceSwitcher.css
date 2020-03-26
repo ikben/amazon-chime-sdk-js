@@ -1,3 +1,77 @@
 .deviceList {
-  width: 308px
+  padding: 0.5rem;
+}
+
+.selectContainer *[class~='select__control'] {
+  background-color: transparent;
+  cursor: pointer;
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+  transition: none;
+  border-radius: 0.25rem;
+  font-size: 0.9rem;
+  min-height: 2rem;
+}
+
+.selectContainer *[class~='select__control']:hover {
+  background-color: var(--color_chalkboard);
+}
+
+.selectContainer *[class~='select__control--menu-is-open'] {
+  background-color: var(--color_chalkboard);
+}
+
+.selectContainer *[class~='select__value-container'] {
+  padding: 0 0.5rem;
+}
+
+.selectContainer *[class~='select__indicators'] {
+  padding: 0 0.25rem;
+}
+
+.selectContainer *[class~='select__single-value'] {
+  color: var(--color_slightly_dark_chalk);
+  margin: 0;
+}
+
+.selectContainer *[class~='select__indicator-separator'] {
+  display: none;
+}
+
+.selectContainer *[class~='select__indicator'] {
+  color: var(--color_slightly_dark_chalk) !important;
+  padding: 0 0.3rem;
+}
+
+.selectContainer *[class~='select__menu'] {
+  margin: 0;
+  padding: 0.5rem;
+  color: var(--color_slightly_dark_chalk);
+  background-color: var(--color_dark_chalkboard);
+  box-shadow: 0 0.25rem 0.5rem var(--color_shadow);
+  overflow: hidden;
+  font-size: 0.9rem;
+}
+
+.selectContainer *[class~='select__menu-list'] {
+  margin: 0;
+  padding: 0;
+}
+
+.selectContainer *[class~='select__option'] {
+  color: var(--color_darker_chalk);
+  background-color: transparent;
+  cursor: pointer;
+  padding: 0.5rem;
+}
+
+.selectContainer *[class~='select__option--is-focused'] {
+  color: var(--color_slightly_dark_chalk) !important;
+  background-color: #1b1b1b !important;
+  border-radius: 0.25rem;
+}
+
+.selectContainer *[class~='select__option--is-selected'] {
+
 }

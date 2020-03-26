@@ -1,5 +1,5 @@
 import classNames from 'classnames/bind';
-import React, { useContext, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 
 import routes from '../constants/routes.json';
@@ -31,9 +31,19 @@ export default function Controls(props: Props) {
   const [muted, setMuted] = useState(false);
   const [focus, setFocus] = useState(false);
   const [videoStatus, setVideoStatus] = useState(VideoStatus.Disabled);
-  chime.audioVideo.realtimeSubscribeToMuteAndUnmuteLocalAudio((localMuted: boolean) => {
-    setMuted(localMuted);
-  });
+
+  useEffect(() => {
+    const callback = (localMuted: boolean) => {
+      setMuted(localMuted);
+    };
+    chime.audioVideo.realtimeSubscribeToMuteAndUnmuteLocalAudio(callback);
+    return () => {
+      if (chime && chime.audioVideo) {
+        chime.audioVideo.realtimeUnsubscribeToMuteAndUnmuteLocalAudio(callback);
+      }
+    };
+  }, []);
+
   return (
     <div
       className={cx('controls', {
@@ -44,7 +54,10 @@ export default function Controls(props: Props) {
       })}
     >
       {state.classMode === ClassMode.Teacher && viewMode === ViewMode.Room && (
-        <Tooltip placement="top" tooltip={focus ? 'Turn off focus' : 'Turn on focus'}>
+        <Tooltip
+          placement="top"
+          tooltip={focus ? 'Turn off focus' : 'Turn on focus'}
+        >
           <button
             type="button"
             className={cx('focusButton', {
@@ -52,7 +65,7 @@ export default function Controls(props: Props) {
             })}
             onClick={() => {
               const newFocusState = !focus;
-              chime.sendMessage('focus', {focus: newFocusState});
+              chime.sendMessage('focus', { focus: newFocusState });
               chime.sendMessage('chat-message', {
                 attendeeId: chime.configuration.credentials.attendeeId,
                 message: newFocusState ? 'Focus on' : 'Focus off'

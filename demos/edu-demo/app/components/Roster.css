@@ -6,6 +6,7 @@
   overflow-y: scroll;
   flex-direction: column;
   position: relative;
+  border-top: 1px solid var(--color_chalkboard);
 }
 
 .noAttendee {
@@ -23,10 +24,6 @@
   align-items: center;
   height: 3rem;
   padding: 0 1rem;
-}
-
-.attendee + .attendee {
-  border-top: 1px solid var(--color_chalkboard);
 }
 
 .name {

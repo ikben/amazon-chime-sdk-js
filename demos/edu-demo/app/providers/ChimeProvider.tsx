@@ -18,11 +18,11 @@ import {
 import React from 'react';
 
 import getChimeContext from '../context/getChimeContext';
+import DeviceType from '../types/DeviceType';
 import MessageType from '../types/MessageType';
 import RosterType from '../types/RosterType';
 import getBaseUrl from '../utils/getBaseUrl';
 import getMessagingWssUrl from '../utils/getMessagingWssUrl';
-import DeviceType from '../types/DeviceType';
 
 export class ChimeSdkWrapper
   implements AudioVideoObserver, ContentShareObserver, DeviceChangeObserver {
@@ -37,11 +37,15 @@ export class ChimeSdkWrapper
   region: string;
 
   currentAudioInputDevice: DeviceType = {};
+
   currentAudioOutputDevice: DeviceType = {};
+
   currentVideoInputDevice: DeviceType = {};
 
   audioInputDevices: DeviceType[] = [];
+
   audioOutputDevices: DeviceType[] = [];
+
   videoInputDevices: DeviceType[] = [];
 
   roster: RosterType = {};
@@ -100,15 +104,17 @@ export class ChimeSdkWrapper
           label: mediaDeviceInfo.label,
           value: mediaDeviceInfo.deviceId
         });
-      });
-      this.audioOutputDevices = [];
+      }
+    );
+    this.audioOutputDevices = [];
     (await this.audioVideo.listAudioOutputDevices()).forEach(
       (mediaDeviceInfo: MediaDeviceInfo) => {
         this.audioOutputDevices.push({
           label: mediaDeviceInfo.label,
           value: mediaDeviceInfo.deviceId
         });
-      });
+      }
+    );
     this.videoInputDevices = [];
     (await this.audioVideo.listVideoInputDevices()).forEach(
       (mediaDeviceInfo: MediaDeviceInfo) => {
@@ -116,7 +122,8 @@ export class ChimeSdkWrapper
           label: mediaDeviceInfo.label,
           value: mediaDeviceInfo.deviceId
         });
-      });
+      }
+    );
     this.devicesUpdatedCallbacks.forEach((devicesUpdatedCallback: Function) => {
       devicesUpdatedCallback();
     });
@@ -189,23 +196,32 @@ export class ChimeSdkWrapper
     );
 
     const audioInputs = await this.audioVideo.listAudioInputDevices();
-    if (audioInputs && audioInputs.length > 0 &&  audioInputs[0].deviceId) {
-      this.currentAudioInputDevice = { label: audioInputs[0].label, value: audioInputs[0].deviceId };
+    if (audioInputs && audioInputs.length > 0 && audioInputs[0].deviceId) {
+      this.currentAudioInputDevice = {
+        label: audioInputs[0].label,
+        value: audioInputs[0].deviceId
+      };
       await this.audioVideo.chooseAudioInputDevice(audioInputs[0].deviceId);
     }
 
     const audioOutputs = await this.audioVideo.listAudioOutputDevices();
     if (audioOutputs && audioOutputs.length > 0 && audioOutputs[0].deviceId) {
-      this.currentAudioOutputDevice = { label: audioOutputs[0].label, value: audioOutputs[0].deviceId };
+      this.currentAudioOutputDevice = {
+        label: audioOutputs[0].label,
+        value: audioOutputs[0].deviceId
+      };
       await this.audioVideo.chooseAudioOutputDevice(audioOutputs[0].deviceId);
     }
 
     const videoInputs = await this.audioVideo.listVideoInputDevices();
     if (videoInputs && videoInputs.length > 0 && videoInputs[0].deviceId) {
-      this.currentVideoInputDevice = { label: videoInputs[0].label, value: videoInputs[0].deviceId };
+      this.currentVideoInputDevice = {
+        label: videoInputs[0].label,
+        value: videoInputs[0].deviceId
+      };
       await this.audioVideo.chooseVideoInputDevice(videoInputs[0].deviceId);
     }
-    
+
     this.devicesUpdatedCallbacks.forEach((devicesUpdatedCallback: Function) => {
       devicesUpdatedCallback();
     });
@@ -297,18 +313,16 @@ export class ChimeSdkWrapper
 
   leaveRoomMessaging = async (): Promise<void> => {
     await this.messagingSocket.close();
-  }
+  };
 
   private devicesUpdatedCallbacks: ((devices: DeviceType[]) => void)[] = [];
 
-  subscribeToDevicesUpdated = (
-    devicesUpdatedCallback: () => void) => {
+  subscribeToDevicesUpdated = (devicesUpdatedCallback: () => void) => {
     this.devicesUpdatedCallbacks.push(devicesUpdatedCallback);
   };
 
-  unsubscribeFromDevicesUpdated = (
-    devicesUpdatedCallback: () => void) => {
-    let index = this.devicesUpdatedCallbacks.indexOf(devicesUpdatedCallback);
+  unsubscribeFromDevicesUpdated = (devicesUpdatedCallback: () => void) => {
+    const index = this.devicesUpdatedCallbacks.indexOf(devicesUpdatedCallback);
     if (index !== -1) {
       this.devicesUpdatedCallbacks.splice(index, 1);
     }
@@ -321,9 +335,9 @@ export class ChimeSdkWrapper
     this.audioInputDevices = [];
     freshAudioInputDeviceList?.forEach((mediaDeviceInfo: MediaDeviceInfo) => {
       this.audioInputDevices.push({
-          label: mediaDeviceInfo.label,
-          value: mediaDeviceInfo.deviceId
-        });
+        label: mediaDeviceInfo.label,
+        value: mediaDeviceInfo.deviceId
+      });
     });
     this.devicesUpdatedCallbacks.forEach((devicesUpdatedCallback: Function) => {
       devicesUpdatedCallback();
@@ -337,9 +351,9 @@ export class ChimeSdkWrapper
     this.audioOutputDevices = [];
     freshAudioOutputDeviceList?.forEach((mediaDeviceInfo: MediaDeviceInfo) => {
       this.audioOutputDevices.push({
-          label: mediaDeviceInfo.label,
-          value: mediaDeviceInfo.deviceId
-        });
+        label: mediaDeviceInfo.label,
+        value: mediaDeviceInfo.deviceId
+      });
     });
     this.devicesUpdatedCallbacks.forEach((devicesUpdatedCallback: Function) => {
       devicesUpdatedCallback();
@@ -353,9 +367,9 @@ export class ChimeSdkWrapper
     this.videoInputDevices = [];
     freshVideoInputDeviceList?.forEach((mediaDeviceInfo: MediaDeviceInfo) => {
       this.videoInputDevices.push({
-          label: mediaDeviceInfo.label,
-          value: mediaDeviceInfo.deviceId
-        });
+        label: mediaDeviceInfo.label,
+        value: mediaDeviceInfo.deviceId
+      });
     });
     this.devicesUpdatedCallbacks.forEach((devicesUpdatedCallback: Function) => {
       devicesUpdatedCallback();

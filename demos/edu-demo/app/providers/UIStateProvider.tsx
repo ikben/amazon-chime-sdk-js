@@ -2,9 +2,16 @@ import React, { useReducer } from 'react';
 
 import localStorageKeys from '../constants/localStorageKeys.json';
 import getUIStateContext from '../context/getUIStateContext';
+import ClassMode from '../enums/ClassMode';
+
+let classMode: ClassMode = localStorage.getItem(localStorageKeys.CLASS_MODE);
+if (!classMode) {
+  localStorage.setItem(localStorageKeys.CLASS_MODE, ClassMode.Student);
+  classMode = ClassMode.Student;
+}
 
 const initialState = {
-  classMode: localStorage.getItem(localStorageKeys.CLASS_MODE) || null
+  classMode
 };
 
 const reducer = (state, action) => {

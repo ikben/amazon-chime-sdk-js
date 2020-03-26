@@ -4,8 +4,8 @@ import React, { useContext, useEffect, useState } from 'react';
 import getChimeContext from '../context/getChimeContext';
 import getUIStateContext from '../context/getUIStateContext';
 import ClassMode from '../enums/ClassMode';
-import styles from './ChatInput.css';
 import useFocusMode from '../hooks/useFocusMode';
+import styles from './ChatInput.css';
 
 const cx = classNames.bind(styles);
 

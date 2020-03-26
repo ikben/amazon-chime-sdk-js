@@ -88,14 +88,13 @@
 }
 
 .deviceSwitcher {
-  flex: 1 1 auto;
-  height: 11%;
+  flex: 0 1 auto;
 }
 
 .roster {
   flex: 1 1 auto;
   overflow-y: scroll;
-  height: 39%;
+  height: 50%;
 }
 
 .chat {

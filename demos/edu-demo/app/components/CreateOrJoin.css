@@ -54,7 +54,7 @@
 }
 
 .button:hover {
-  background: #111;
+  background: var(--color_dark_chalkboard);
 }
 
 .loginLink {

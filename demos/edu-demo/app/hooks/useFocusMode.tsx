@@ -1,8 +1,8 @@
 import { useContext, useEffect, useState } from 'react';
 
-import ClassMode from '../enums/ClassMode';
 import getChimeContext from '../context/getChimeContext';
 import getUIStateContext from '../context/getUIStateContext';
+import ClassMode from '../enums/ClassMode';
 
 export default function useFocusMode() {
   const chime = useContext(getChimeContext());
