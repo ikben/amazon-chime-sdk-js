@@ -5,6 +5,7 @@ import getChimeContext from '../context/getChimeContext';
 import getUIStateContext from '../context/getUIStateContext';
 import ClassMode from '../enums/ClassMode';
 import styles from './ChatInput.css';
+import useFocusMode from '../hooks/useFocusMode';
 
 const cx = classNames.bind(styles);
 
@@ -15,6 +16,7 @@ export default React.memo(function ChatInput() {
   const [state] = useContext(getUIStateContext());
   const [inputText, setInputText] = useState('');
   const [raised, setRaised] = useState(false);
+  const focusMode = useFocusMode();
 
   useEffect(() => {
     if (!chime.configuration) {
@@ -53,6 +55,9 @@ export default React.memo(function ChatInput() {
           }}
           onKeyUp={event => {
             event.preventDefault();
+            if (focusMode && state.classMode === ClassMode.Student) {
+              return;
+            }
             if (event.keyCode === 13) {
               const sendingMessage = inputText.trim();
               if (sendingMessage !== '') {

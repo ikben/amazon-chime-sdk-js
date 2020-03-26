@@ -2,7 +2,7 @@ import { useContext, useEffect, useState } from 'react';
 
 import getChimeContext from '../context/getChimeContext';
 
-export default function useRaisedHandeAttendees() {
+export default function useRaisedHandAttendees() {
   const chime = useContext(getChimeContext());
   const [raisedHandAttendees, setRaisedHandAttendees] = useState(new Set());
   useEffect(() => {

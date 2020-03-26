@@ -3,7 +3,7 @@ import React, { useContext, useEffect, useState } from 'react';
 
 import getChimeContext from '../context/getChimeContext';
 import getRosterContext from '../context/getRosterContext';
-import useRaisedHandeAttendees from '../hooks/useRaisedHandeAttendees';
+import useRaisedHandAttendees from '../hooks/useRaisedHandAttendees';
 import RosterAttendeeType from '../types/RosterAttendeeType';
 import styles from './Roster.css';
 
@@ -13,7 +13,7 @@ export default function Roster() {
   const chime = useContext(getChimeContext());
   const roster = useContext(getRosterContext());
   const [videoAttendees, setVideoAttendees] = useState(new Set());
-  const raisedHandAttendees = useRaisedHandeAttendees();
+  const raisedHandAttendees = useRaisedHandAttendees();
 
   useEffect(() => {
     const tileIds: { [tileId: number]: string } = {};

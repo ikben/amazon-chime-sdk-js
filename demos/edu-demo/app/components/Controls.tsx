@@ -29,7 +29,11 @@ export default function Controls(props: Props) {
   const [state] = useContext(getUIStateContext());
   const history = useHistory();
   const [muted, setMuted] = useState(false);
+  const [focus, setFocus] = useState(false);
   const [videoStatus, setVideoStatus] = useState(VideoStatus.Disabled);
+  chime.audioVideo.realtimeSubscribeToMuteAndUnmuteLocalAudio((localMuted: boolean) => {
+    setMuted(localMuted);
+  });
   return (
     <div
       className={cx('controls', {
@@ -39,6 +43,31 @@ export default function Controls(props: Props) {
         audioMuted: muted
       })}
     >
+      {state.classMode === ClassMode.Teacher && viewMode === ViewMode.Room && (
+        <Tooltip placement="top" tooltip={focus ? 'Turn on focus' : 'Turn off focus'}>
+          <button
+            type="button"
+            className={cx('focusButton', {
+              enabled: focus
+            })}
+            onClick={() => {
+              const newFocusState = !focus;
+              chime.sendMessage('focus', {focus: newFocusState});
+              chime.sendMessage('chat-message', {
+                attendeeId: chime.configuration.credentials.attendeeId,
+                message: newFocusState ? 'Focus on' : 'Focus off'
+              });
+              setFocus(newFocusState);
+            }}
+          >
+            {focus ? (
+              <i className="fas fa-street-view" />
+            ) : (
+              <i className="fas fa-users" />
+            )}
+          </button>
+        </Tooltip>
+      )}
       <Tooltip placement="top" tooltip={muted ? 'Unmute' : 'Mute'}>
         <button
           type="button"
@@ -53,7 +82,6 @@ export default function Controls(props: Props) {
             }
             // Adds a slight delay to close the tooltip before rendering the updated text in it
             await new Promise(resolve => setTimeout(resolve, 10));
-            setMuted(!muted);
           }}
         >
           {muted ? (

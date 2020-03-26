@@ -5,7 +5,7 @@ import React, { useCallback, useContext, useEffect, useState } from 'react';
 import getChimeContext from '../context/getChimeContext';
 import getRosterContext from '../context/getRosterContext';
 import ViewMode from '../enums/ViewMode';
-import useRaisedHandeAttendees from '../hooks/useRaisedHandeAttendees';
+import useRaisedHandAttendees from '../hooks/useRaisedHandAttendees';
 import RosterAttendeeType from '../types/RosterAttendeeType';
 import RemoteVideo, { Size } from './RemoteVideo';
 import styles from './RemoteVideoGroup.css';
@@ -22,7 +22,7 @@ export default function RemoteVideoGroup(props: Props) {
   const chime = useContext(getChimeContext());
   const roster = useContext(getRosterContext());
   const [visibleIndices, setVisibleIndices] = useState({});
-  const raisedHandAttendees = useRaisedHandeAttendees();
+  const raisedHandAttendees = useRaisedHandAttendees();
   const videoElements: HTMLVideoElement[] = [];
   const tiles: { [index: number]: number } = {};
 
