@@ -2,13 +2,15 @@ import classNames from 'classnames/bind';
 import React, { useContext, useEffect, useState } from 'react';
 import Dropdown from 'react-dropdown';
 
+import DeviceType from '../types/DeviceType';
+import FullDeviceInfoType from '../types/FullDeviceInfoType';
 import getChimeContext from '../context/getChimeContext';
 import styles from './DeviceSwitcher.css';
 
 const cx = classNames.bind(styles);
 
 export default function DeviceSwitcher() {
-  const chime = useContext(getChimeContext()) as ChimeSdkWrapper;
+  const chime = useContext(getChimeContext());
   const [deviceSwitcherState, setDeviceUpdated] = useState({
     currentAudioInputDevice: chime.currentAudioInputDevice,
     currentAudioOutputDevice: chime.currentAudioOutputDevice,
@@ -19,14 +21,9 @@ export default function DeviceSwitcher() {
   });
 
   useEffect(() => {
-    const devicesUpdatedCallback = () => {
+    const devicesUpdatedCallback = (fullDeviceInfo: FullDeviceInfoType) => {
       setDeviceUpdated({
-        currentAudioInputDevice: chime.currentAudioInputDevice,
-        currentAudioOutputDevice: chime.currentAudioOutputDevice,
-        currentVideoInputDevice: chime.currentVideoInputDevice,
-        audioInputDevices: chime.audioInputDevices,
-        audioOutputDevices: chime.audioOutputDevices,
-        videoInputDevices: chime.videoInputDevices
+        ...fullDeviceInfo
       });
     };
 
@@ -46,16 +43,16 @@ export default function DeviceSwitcher() {
         arrowClassName={cx('arrow')}
         value={deviceSwitcherState.currentAudioInputDevice}
         options={deviceSwitcherState.audioInputDevices}
+        disabled={!deviceSwitcherState.audioInputDevices || !deviceSwitcherState.audioInputDevices.length}
         isSearchable={false}
-        defaultValue={deviceSwitcherState.currentAudioInputDevice}
-        onChange={(selectedOption: { value: string }) => {
-          chime.audioVideo.chooseAudioInputDevice(selectedOption.value);
+        onChange={async (selectedDevice: DeviceType) => {
+          await chime.chooseAudioInputDevice(selectedDevice);
           setDeviceUpdated({
             ...deviceSwitcherState,
-            currentAudioInputDevice: selectedOption
+            currentAudioInputDevice: selectedDevice
           });
         }}
-        placeholder="Select a device"
+        placeholder="No microphone"
       />
       <Dropdown
         className={cx('dropdown')}
@@ -65,16 +62,16 @@ export default function DeviceSwitcher() {
         arrowClassName={cx('arrow')}
         value={deviceSwitcherState.currentAudioOutputDevice}
         options={deviceSwitcherState.audioOutputDevices}
+        disabled={!deviceSwitcherState.audioOutputDevices || !deviceSwitcherState.audioOutputDevices.length}
         isSearchable={false}
-        defaultValue={deviceSwitcherState.currentAudioOutputDevice}
-        onChange={(selectedOption: { value: string }) => {
-          chime.audioVideo.chooseAudioOutputDevice(selectedOption.value);
+        onChange={async (selectedDevice: DeviceType) => {
+          await chime.chooseAudioOutputDevice(selectedDevice);
           setDeviceUpdated({
             ...deviceSwitcherState,
-            currentAudioOutputDevice: selectedOption
+            currentAudioOutputDevice: selectedDevice
           });
         }}
-        placeholder="Select a device"
+        placeholder="No speaker"
       />
       <Dropdown
         className={cx('dropdown')}
@@ -84,16 +81,16 @@ export default function DeviceSwitcher() {
         arrowClassName={cx('arrow')}
         value={deviceSwitcherState.currentVideoInputDevice}
         options={deviceSwitcherState.videoInputDevices}
+        disabled={!deviceSwitcherState.videoInputDevices || !deviceSwitcherState.videoInputDevices.length}
         isSearchable={false}
-        defaultValue={deviceSwitcherState.currentVideoInputDevice}
-        onChange={(selectedOption: { value: string }) => {
-          chime.audioVideo.chooseVideoInputDevice(selectedOption.value);
+        onChange={async (selectedDevice: DeviceType) => {
+          await chime.chooseVideoInputDevice(selectedDevice);
           setDeviceUpdated({
             ...deviceSwitcherState,
-            currentVideoInputDevice: selectedOption
+            currentVideoInputDevice: selectedDevice
           });
         }}
-        placeholder="Select a device"
+        placeholder="No video device"
       />
     </div>
   );

@@ -19,6 +19,7 @@ import React from 'react';
 
 import getChimeContext from '../context/getChimeContext';
 import DeviceType from '../types/DeviceType';
+import FullDeviceInfoType from '../types/FullDeviceInfoType';
 import MessageType from '../types/MessageType';
 import RosterType from '../types/RosterType';
 import getBaseUrl from '../utils/getBaseUrl';
@@ -48,15 +49,36 @@ export class ChimeSdkWrapper
 
   videoInputDevices: DeviceType[] = [];
 
+  devicesUpdatedCallbacks: ((fullDeviceInfo: FullDeviceInfoType) => void)[] = [];
+
   roster: RosterType = {};
 
-  rosterUpdateCallbacks: RosterType[] = [];
+  rosterUpdateCallbacks: ((roster: RosterType) => void)[] = [];
 
   configuration: MeetingSessionConfiguration = null;
 
   messagingSocket: ReconnectingPromisedWebSocket = null;
 
-  messageUpdateCallbacks: MessageType[] = [];
+  messageUpdateCallbacks: ((message: MessageType) => void)[] = [];
+
+  private initializeSdkWrapper = () => {
+    this.meetingSession = null;
+    this.audioVideo = null;
+    this.title = null;
+    this.name = null;
+    this.region = null;
+    this.currentAudioInputDevice = {};
+    this.currentAudioOutputDevice = {};
+    this.currentVideoInputDevice = {};
+    this.audioInputDevices = [];
+    this.audioOutputDevices = [];
+    this.videoInputDevices = [];
+    this.roster = {};
+    this.rosterUpdateCallbacks = [];
+    this.configuration = null;
+    this.messagingSocket = null;
+    this.messageUpdateCallbacks = [];
+  };
 
   // eslint-disable-next-line
   createRoom = async (title: string, name: string, region: string): Promise<any> => {
@@ -124,9 +146,7 @@ export class ChimeSdkWrapper
         });
       }
     );
-    this.devicesUpdatedCallbacks.forEach((devicesUpdatedCallback: Function) => {
-      devicesUpdatedCallback();
-    });
+    this.publishDevicesUpdated();
     this.audioVideo.addDeviceChangeObserver(this);
 
     this.audioVideo.realtimeSubscribeToAttendeeIdPresence(
@@ -190,8 +210,7 @@ export class ChimeSdkWrapper
     window.addEventListener(
       'unhandledrejection',
       (event: PromiseRejectionEvent) => {
-        // eslint-disable-next-line
-        console.error(event.reason);
+        this.logError(event.reason);
       }
     );
 
@@ -222,9 +241,7 @@ export class ChimeSdkWrapper
       await this.audioVideo.chooseVideoInputDevice(videoInputs[0].deviceId);
     }
 
-    this.devicesUpdatedCallbacks.forEach((devicesUpdatedCallback: Function) => {
-      devicesUpdatedCallback();
-    });
+    this.publishDevicesUpdated();
 
     this.audioVideo.bindAudioElement(element);
     this.audioVideo.start();
@@ -263,8 +280,7 @@ export class ChimeSdkWrapper
           name
         });
       } catch (error) {
-        // eslint-disable-next-line
-        console.error(error);
+        this.logError(error);
       }
     });
   };
@@ -295,19 +311,9 @@ export class ChimeSdkWrapper
         );
       }
     } catch (error) {
-      // eslint-disable-next-line
-      console.error(error);
+      this.logError(error);
     } finally {
-      this.meetingSession = null;
-      this.audioVideo = null;
-      this.title = null;
-      this.name = null;
-      this.region = null;
-      this.roster = {};
-      this.rosterUpdateCallbacks = [];
-      this.configuration = null;
-      this.messagingSocket = null;
-      this.messageUpdateCallbacks = [];
+      this.initializeSdkWrapper();
     }
   };
 
@@ -315,69 +321,129 @@ export class ChimeSdkWrapper
     await this.messagingSocket.close();
   };
 
-  private devicesUpdatedCallbacks: ((devices: DeviceType[]) => void)[] = [];
+  /**
+   * ====================================================================
+   * Device
+   * ====================================================================
+   */
 
-  subscribeToDevicesUpdated = (devicesUpdatedCallback: () => void) => {
-    this.devicesUpdatedCallbacks.push(devicesUpdatedCallback);
+  chooseAudioInputDevice = async (device: DeviceType) => {
+    try {
+      await this.audioVideo.chooseAudioInputDevice(device.value);
+      this.currentAudioInputDevice = device;
+    } catch (error) {
+      this.logError(error);
+    }
   };
 
-  unsubscribeFromDevicesUpdated = (devicesUpdatedCallback: () => void) => {
-    const index = this.devicesUpdatedCallbacks.indexOf(devicesUpdatedCallback);
-    if (index !== -1) {
-      this.devicesUpdatedCallbacks.splice(index, 1);
+  chooseAudioOutputDevice = async (device: DeviceType) => {
+    try {
+      await this.audioVideo.chooseAudioOutputDevice(device.value);
+      this.currentAudioOutputDevice = device;
+    } catch (error) {
+      this.logError(error);
+    }
+  };
+
+  chooseVideoInputDevice = async (device: DeviceType) => {
+    try {
+      await this.audioVideo.chooseVideoInputDevice(device.value);
+      this.currentVideoInputDevice = device;
+    } catch (error) {
+      this.logError(error);
     }
   };
 
   /**
-   * Called when audio inputs are changed.
+   * ====================================================================
+   * Observer methods
+   * ====================================================================
    */
-  audioInputsChanged?(freshAudioInputDeviceList?: MediaDeviceInfo[]): void {
+  
+  audioInputsChanged(freshAudioInputDeviceList: MediaDeviceInfo[]): void {
+    let hasCurrentDevice: boolean = false;
     this.audioInputDevices = [];
-    freshAudioInputDeviceList?.forEach((mediaDeviceInfo: MediaDeviceInfo) => {
+    freshAudioInputDeviceList.forEach((mediaDeviceInfo: MediaDeviceInfo) => {
+      if (this.currentAudioInputDevice && mediaDeviceInfo.deviceId === this.currentAudioInputDevice.value) {
+        hasCurrentDevice = true;
+      }
       this.audioInputDevices.push({
         label: mediaDeviceInfo.label,
         value: mediaDeviceInfo.deviceId
       });
     });
-    this.devicesUpdatedCallbacks.forEach((devicesUpdatedCallback: Function) => {
-      devicesUpdatedCallback();
-    });
+    if (!hasCurrentDevice) {
+      this.currentAudioInputDevice = this.audioInputDevices.length > 0 ? this.audioInputDevices[0] : null;
+    }
+    this.publishDevicesUpdated();
   }
 
-  /**
-   * Called when audio outputs are changed.
-   */
-  audioOutputsChanged?(freshAudioOutputDeviceList?: MediaDeviceInfo[]): void {
+  audioOutputsChanged(freshAudioOutputDeviceList: MediaDeviceInfo[]): void {
+    let hasCurrentDevice: boolean = false;
     this.audioOutputDevices = [];
-    freshAudioOutputDeviceList?.forEach((mediaDeviceInfo: MediaDeviceInfo) => {
+    freshAudioOutputDeviceList.forEach((mediaDeviceInfo: MediaDeviceInfo) => {
+      if (this.currentAudioOutputDevice && mediaDeviceInfo.deviceId === this.currentAudioOutputDevice.value) {
+        hasCurrentDevice = true;
+      }
       this.audioOutputDevices.push({
         label: mediaDeviceInfo.label,
         value: mediaDeviceInfo.deviceId
       });
     });
-    this.devicesUpdatedCallbacks.forEach((devicesUpdatedCallback: Function) => {
-      devicesUpdatedCallback();
-    });
+    if (!hasCurrentDevice) {
+      this.currentAudioOutputDevice = this.audioOutputDevices.length > 0 ? this.audioOutputDevices[0] : null;
+    }
+    this.publishDevicesUpdated();
   }
 
-  /**
-   * Called when video inputs are changed.
-   */
-  videoInputsChanged?(freshVideoInputDeviceList?: MediaDeviceInfo[]): void {
+  videoInputsChanged(freshVideoInputDeviceList: MediaDeviceInfo[]): void {
+    let hasCurrentDevice: boolean = false;
     this.videoInputDevices = [];
-    freshVideoInputDeviceList?.forEach((mediaDeviceInfo: MediaDeviceInfo) => {
+    freshVideoInputDeviceList.forEach((mediaDeviceInfo: MediaDeviceInfo) => {
+      if (this.currentVideoInputDevice && mediaDeviceInfo.deviceId === this.currentVideoInputDevice.value) {
+        hasCurrentDevice = true;
+      }
       this.videoInputDevices.push({
         label: mediaDeviceInfo.label,
         value: mediaDeviceInfo.deviceId
       });
     });
-    this.devicesUpdatedCallbacks.forEach((devicesUpdatedCallback: Function) => {
-      devicesUpdatedCallback();
-    });
+    if (!hasCurrentDevice) {
+      this.currentVideoInputDevice = this.videoInputDevices.length > 0 ? this.videoInputDevices[0] : null;
+    }
+    this.publishDevicesUpdated();
   }
 
-  private rosterUpdateCallbacks: RosterType[] = [];
+  /**
+   * ====================================================================
+   * Subscribe and unsubscribe from SDK events
+   * ====================================================================
+   */
 
+  subscribeToDevicesUpdated = (callback: () => void) => {
+    this.devicesUpdatedCallbacks.push(callback);
+  };
+
+  unsubscribeFromDevicesUpdated = (callback: () => void) => {
+    const index = this.devicesUpdatedCallbacks.indexOf(callback);
+    if (index !== -1) {
+      this.devicesUpdatedCallbacks.splice(index, 1);
+    }
+  };
+
+  private publishDevicesUpdated = () => {
+    this.devicesUpdatedCallbacks.forEach((callback: (fullDeviceInfo: FullDeviceInfoType) => void) => {
+      callback({
+        currentAudioInputDevice: this.currentAudioInputDevice,
+        currentAudioOutputDevice: this.currentAudioOutputDevice,
+        currentVideoInputDevice: this.currentVideoInputDevice,
+        audioInputDevices: this.audioInputDevices,
+        audioOutputDevices: this.audioOutputDevices,
+        videoInputDevices: this.videoInputDevices
+      });
+    });
+  };
+  
   subscribeToRosterUpdate = (callback: (roster: RosterType) => void) => {
     this.rosterUpdateCallbacks.push(callback);
   };
@@ -412,6 +478,16 @@ export class ChimeSdkWrapper
       const callback = this.messageUpdateCallbacks[i];
       callback(message);
     }
+  };
+
+  /**
+   * ====================================================================
+   * Utilities
+   * ====================================================================
+   */
+  private logError =(error: Error) => {
+    // eslint-disable-next-line
+    console.error(event);
   };
 }
 
