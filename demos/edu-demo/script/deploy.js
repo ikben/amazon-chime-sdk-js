@@ -5,19 +5,20 @@ const fs = require("fs");
 const path = require("path");
 
 // Parameters
-let region = 'us-east-1';
-let bucket = ``;
-let stack = ``;
-let app = `meeting`;
+let region = '';
+let bucket = '';
+let stack = '';
 let useEventBridge = false;
-let appName = 'EduClassroom';
+let appName = '';
 
 function usage() {
-  console.log(`Usage: setup.js -s <stack> [-r region] [-b bucket]`);
-  console.log(`  -s, --stack-name   CloudFormation stack name, required`);
+  console.log(`Usage: deploy.js -r <region> -a <app-name> -s <stack-name> -b <bucket>`);
+  console.log(`  -r, --region       Deployment region, required`);
+  console.log(`  -a, --app-name     Application name (e.g. MyClassroom), required`);
+  console.log(`  -s, --stack-name   CloudFormation stack name (e.g. <your-name>-myclassroom-1), required`);
+  console.log(`  -b, --s3-bucket    Globally unique S3 bucket prefix for deployment (e.g. <your-name>-myclassroom-1), required`);
+  console.log('');
   console.log('Optional:');
-  console.log(`  -r, --region       Target region, default '${region}'`);
-  console.log(`  -b, --s3-bucket    S3 bucket for deployment, default is stack name`);
   console.log(`  -h, --help         Show help and exit`);
 }
 
@@ -66,6 +67,9 @@ function parseArgs() {
       case '-b': case '--s3-bucket':
         bucket = getArgOrExit(++i, args)
         break;
+      case '-a': case '--app-name':
+        appName = getArgOrExit(++i, args).replace(/[\W_]+/g, '');
+        break;
       case '-s': case '--stack-name':
         stack = getArgOrExit(++i, args)
         break;
@@ -79,13 +83,10 @@ function parseArgs() {
     }
     ++i;
   }
-  if (!stack) {
+  if (!stack || !appName || !bucket || !region) {
     console.log('Missing required parameters');
     usage();
     process.exit(1);
-  }
-  if (!bucket) {
-    bucket = stack;
   }
 }
 
@@ -134,15 +135,6 @@ function main() {
 
   spawnOrFail('script/cloud9-resize.sh', []);
 
-  if (!fs.existsSync('amazon-chime-sdk-js')) {
-    process.chdir('/tmp');
-    spawnOrFail('rm', ['-rf', '/tmp/amazon-chime-sdk-js']);
-    spawnOrFail('git', ['clone', '--depth', '1', 'https://github.com/aws/amazon-chime-sdk-js.git']);
-    process.chdir('/tmp/amazon-chime-sdk-js');
-    spawnOrFail('npm', ['run', 'build']);
-    process.chdir(rootDir);
-    spawnOrFail('mv', ['/tmp/amazon-chime-sdk-js', rootDir + '/amazon-chime-sdk-js']);
-  }
   process.chdir(rootDir + '/serverless');
 
   if (!fs.existsSync('build')) {
@@ -153,14 +145,34 @@ function main() {
   ensureBucket(bucket, false);
   ensureBucket(bucket + '-releases', true);
 
+  const cssStyle = fs.readFileSync(rootDir + '/resources/download.css', 'utf8');
   fs.writeFileSync('src/index.html', `
+<!DOCTYPE html>
 <html>
+<head>
+<meta charset="utf-8">
+<title>Download ${appName}</title>
+<style>
+${cssStyle}
+</style>
+</head>
 <body>
-<a href="https://${bucket}-releases.s3.amazonaws.com/mac/${appName}.zip">Download ${appName} for macOS (ZIP)</a> |
-<a href="https://${bucket}-releases.s3.amazonaws.com/win/${appName}.zip">Download ${appName} for Windows (ZIP)</a>
+<article class="markdown-body">
+<h3>Download ${appName}</h3>
+<ul>
+<li><a href="https://${bucket}-releases.s3.amazonaws.com/mac/${appName}.zip">${appName} for macOS (ZIP)</a></li>
+<li><a href="https://${bucket}-releases.s3.amazonaws.com/win/${appName}.zip">${appName} for Windows (ZIP)</a></li>
+</ul>
+</article>
+</body>
+</html>
   `);
 
-  spawnOrFail('touch', ['src/index.html', 'src/indexV2.html']);
+  const packageJson = JSON.parse(fs.readFileSync(rootDir + '/package.json', 'utf8'));
+  packageJson.productName = appName;
+  packageJson.build.productName = appName;
+  packageJson.build.appId = `com.amazonaws.services.chime.sdk.classroom.demo.${appName}`;
+  fs.writeFileSync(rootDir + '/package.json', JSON.stringify(packageJson, null, 2));
 
   spawnOrFail('sam', ['package', '--s3-bucket', `${bucket}`,
                       `--output-template-file`, `build/packaged.yaml`,

@@ -1,6 +1,10 @@
-## EduClassroom
+# Amazon Chime SDK Classroom Demo
 
-### Cloud9 deploy
+This demo shows how to use the Amazon Chime SDK to build an online classroom in Electron and React.
+
+## Installation
+
+### Option 1: Deploy via AWS Cloud9
 
 #### Create an AWS Cloud9 environment
 
@@ -22,23 +26,23 @@ git checkout edu-demo
 cd demos/edu-demo
 ```
 
-Now in the same Terminal, run the following command to deploy, package, and create a distribution for your application. Note this will take about 15 minutes.
+Now in the same Terminal pane, run the following command to deploy, package, and create a distribution for your application. Note this will take about 15 minutes.
 
-```
-script/deploy.js -s <unique stack name>
+```bash
+script/deploy.js -r <region> -a <app name> -s <unique stack name> -b <unique bucket name>
 ```
 
 At the end of the script you will see a URL to a download page. Save this link.
 
-### Local development
+### Option 2: Deploy from your local machine
 
 First deploy the stack:
 
 ```bash
-script/deploy.js -s <stack-name>
+script/deploy.js -r <region> -a <app name> -s <unique stack name> -b <unique bucket name>
 ```
 
-Note the URL when the deployment finishes, this will have a link to download the clients. To continue development locally use:
+At the end of the script you will see a URL to a download page. Save this link. To run the application locally in Electron run:
 
 ```bash
 yarn dev

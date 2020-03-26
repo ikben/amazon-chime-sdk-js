@@ -1,8 +1,8 @@
 {
-  "name": "EduClassroom",
-  "productName": "EduClassroom",
+  "name": "amazon-chime-sdk-classroom-demo",
+  "productName": "MyClassroom",
   "version": "1.0.0",
-  "description": "EduClassroom demonstrates how to use the Amazon Chime SDK to build an online classroom with Electron",
+  "description": "Demonstrates how to use the Amazon Chime SDK to build an online classroom with Electron and React",
   "scripts": {
     "build": "concurrently \"yarn build-main\" \"yarn build-renderer\"",
     "build-dll": "cross-env NODE_ENV=development webpack --config ./configs/webpack.config.renderer.dev.dll.babel.js --colors",
@@ -52,8 +52,8 @@
     ]
   },
   "build": {
-    "productName": "EduClassroom",
-    "appId": "aws.chime.EduClassroom",
+    "productName": "MyClassroom",
+    "appId": "com.amazonaws.services.chime.sdk.classroom.demo.MyClassroom",
     "artifactName": "${productName}.${ext}",
     "files": [
       "dist/",
@@ -97,35 +97,23 @@
     },
     "publish": {
       "provider": "github",
-      "owner": "electron-react-boilerplate",
-      "repo": "electron-react-boilerplate",
+      "owner": "aws-samples",
+      "repo": "amazon-chime-sdk-classroom-demo",
       "private": false
     }
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/electron-react-boilerplate/electron-react-boilerplate.git"
+    "url": "git+https://github.com/aws-samples/amazon-chime-sdk-classroom-demo.git"
   },
   "author": {
-    "name": "Electron React Boilerplate Maintainers",
-    "email": "electronreactboilerplate@gmail.com",
-    "url": "https://electron-react-boilerplate.js.org"
+    "name": "Amazon Chime SDK Team",
+    "url": "https://github.com/aws-samples/amazon-chime-sdk-classroom-demo"
   },
-  "contributors": [
-    {
-      "name": "Vikram Rangaraj",
-      "email": "vikr01@icloud.com",
-      "url": "https://github.com/vikr01"
-    },
-    {
-      "name": "Amila Welihinda",
-      "email": "amilajack@gmail.com",
-      "url": "https://github.com/amilajack"
-    }
-  ],
+  "contributors": [],
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/electron-react-boilerplate/electron-react-boilerplate/issues"
+    "url": "https://github.com/aws-samples/amazon-chime-sdk-classroom-demo/issues"
   },
   "keywords": [
     "electron",
@@ -139,7 +127,7 @@
     "hot",
     "reload"
   ],
-  "homepage": "https://github.com/electron-react-boilerplate/electron-react-boilerplate#readme",
+  "homepage": "https://github.com/aws-samples/amazon-chime-sdk-classroom-demo",
   "jest": {
     "testURL": "http://localhost/",
     "moduleNameMapper": {
