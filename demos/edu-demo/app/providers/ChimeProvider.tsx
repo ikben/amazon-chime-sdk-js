@@ -36,9 +36,9 @@ export class ChimeSdkWrapper
 
   region: string;
 
-  currentAudioInputDevice: DeviceType = { label: 'Unavailable', value: '' };
-  currentAudioOutputDevice: DeviceType = { label: 'Unavailable', value: '' };
-  currentVideoInputDevice: DeviceType = { label: 'Unavailable', value: '' };
+  currentAudioInputDevice: DeviceType = {};
+  currentAudioOutputDevice: DeviceType = {};
+  currentVideoInputDevice: DeviceType = {};
 
   audioInputDevices: DeviceType[] = [];
   audioOutputDevices: DeviceType[] = [];
@@ -93,6 +93,7 @@ export class ChimeSdkWrapper
     );
     this.audioVideo = this.meetingSession.audioVideo;
 
+    this.audioInputDevices = [];
     (await this.audioVideo.listAudioInputDevices()).forEach(
       (mediaDeviceInfo: MediaDeviceInfo) => {
         this.audioInputDevices.push({
@@ -100,6 +101,7 @@ export class ChimeSdkWrapper
           value: mediaDeviceInfo.deviceId
         });
       });
+      this.audioOutputDevices = [];
     (await this.audioVideo.listAudioOutputDevices()).forEach(
       (mediaDeviceInfo: MediaDeviceInfo) => {
         this.audioOutputDevices.push({
@@ -107,6 +109,7 @@ export class ChimeSdkWrapper
           value: mediaDeviceInfo.deviceId
         });
       });
+    this.videoInputDevices = [];
     (await this.audioVideo.listVideoInputDevices()).forEach(
       (mediaDeviceInfo: MediaDeviceInfo) => {
         this.videoInputDevices.push({
@@ -114,6 +117,9 @@ export class ChimeSdkWrapper
           value: mediaDeviceInfo.deviceId
         });
       });
+    this.devicesUpdatedCallbacks.forEach((devicesUpdatedCallback: Function) => {
+      devicesUpdatedCallback();
+    });
     this.audioVideo.addDeviceChangeObserver(this);
 
     this.audioVideo.realtimeSubscribeToAttendeeIdPresence(

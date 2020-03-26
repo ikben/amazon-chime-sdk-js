@@ -42,6 +42,7 @@ export default function DeviceSwitcher() {
       <Select className={cx('deviceList')} 
         options={deviceSwitcherState.audioInputDevices} 
         isSearchable='false' 
+        value={deviceSwitcherState.currentAudioInputDevice}
         defaultValue={deviceSwitcherState.currentAudioInputDevice} 
         onChange={(selectedOption: any)=>{
           chime.audioVideo.chooseAudioInputDevice(selectedOption.value);
@@ -50,6 +51,7 @@ export default function DeviceSwitcher() {
       <Select className={cx('deviceList')} 
         options={deviceSwitcherState.audioOutputDevices} 
         isSearchable='false' 
+        value={deviceSwitcherState.currentAudioOutputDevice}
         defaultValue={deviceSwitcherState.currentAudioOutputDevice}
         onChange={(selectedOption: any)=>{
           chime.audioVideo.chooseAudioOutputDevice(selectedOption.value);
@@ -58,6 +60,7 @@ export default function DeviceSwitcher() {
       <Select className={cx('deviceList')}
         options={deviceSwitcherState.videoInputDevices}
         isSearchable='false'
+        value={deviceSwitcherState.currentVideoInputDevice}
         defaultValue={deviceSwitcherState.currentVideoInputDevice}
         onChange={(selectedOption: any)=>{
           chime.audioVideo.chooseVideoInputDevice(selectedOption.value);
