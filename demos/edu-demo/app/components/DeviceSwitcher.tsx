@@ -1,6 +1,6 @@
 import classNames from 'classnames/bind';
 import React, { useContext, useEffect, useState } from 'react';
-import Select from 'react-select';
+import Dropdown from 'react-dropdown';
 
 import getChimeContext from '../context/getChimeContext';
 import styles from './DeviceSwitcher.css';
@@ -38,9 +38,12 @@ export default function DeviceSwitcher() {
 
   return (
     <div className={cx('deviceList')}>
-      <Select
-        className={cx('selectContainer')}
-        classNamePrefix={cx('select')}
+      <Dropdown
+        className={cx('dropdown')}
+        controlClassName={cx('control')}
+        placeholderClassName={cx('placeholder')}
+        menuClassName={cx('menu')}
+        arrowClassName={cx('arrow')}
         value={deviceSwitcherState.currentAudioInputDevice}
         options={deviceSwitcherState.audioInputDevices}
         isSearchable={false}
@@ -52,10 +55,14 @@ export default function DeviceSwitcher() {
             currentAudioInputDevice: selectedOption
           });
         }}
+        placeholder="Select a device"
       />
-      <Select
-        className={cx('selectContainer')}
-        classNamePrefix={cx('select')}
+      <Dropdown
+        className={cx('dropdown')}
+        controlClassName={cx('control')}
+        placeholderClassName={cx('placeholder')}
+        menuClassName={cx('menu')}
+        arrowClassName={cx('arrow')}
         value={deviceSwitcherState.currentAudioOutputDevice}
         options={deviceSwitcherState.audioOutputDevices}
         isSearchable={false}
@@ -67,10 +74,14 @@ export default function DeviceSwitcher() {
             currentAudioOutputDevice: selectedOption
           });
         }}
+        placeholder="Select a device"
       />
-      <Select
-        className={cx('selectContainer')}
-        classNamePrefix={cx('select')}
+      <Dropdown
+        className={cx('dropdown')}
+        controlClassName={cx('control')}
+        placeholderClassName={cx('placeholder')}
+        menuClassName={cx('menu')}
+        arrowClassName={cx('arrow')}
         value={deviceSwitcherState.currentVideoInputDevice}
         options={deviceSwitcherState.videoInputDevices}
         isSearchable={false}
@@ -82,6 +93,7 @@ export default function DeviceSwitcher() {
             currentVideoInputDevice: selectedOption
           });
         }}
+        placeholder="Select a device"
       />
     </div>
   );

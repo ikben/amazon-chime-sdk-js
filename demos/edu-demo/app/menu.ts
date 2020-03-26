@@ -128,10 +128,10 @@ export default class MenuBuilder {
       label: 'View',
       submenu: [
         {
-          label: 'Toggle Full Screen',
-          accelerator: 'Ctrl+Command+F',
+          label: 'Toggle Developer Tools',
+          accelerator: 'Alt+Command+I',
           click: () => {
-            this.mainWindow.setFullScreen(!this.mainWindow.isFullScreen());
+            this.mainWindow.webContents.toggleDevTools();
           }
         }
       ]
