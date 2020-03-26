@@ -122,7 +122,7 @@ export default function ScreenPicker(props: Props) {
           ))}
       </div>
       <div className={cx('bottom')}>
-        <div className={cx('buttonContainer')}>
+        <div className={cx('buttons')}>
           <button
             type="button"
             className={cx('cancelButton')}

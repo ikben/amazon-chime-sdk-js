@@ -24,12 +24,30 @@
   height: 100%;
 }
 
-.remoteVideoGroup {
+.contentVideoWrapper {
+  display: none;
+  flex: 1 1 auto;
+  overflow-y: hidden;
+}
+
+.classroom.isContentShareEnabled .contentVideoWrapper {
+  display: block;
+}
+
+.classroom.screenShareMode .contentVideoWrapper {
+  display: none !important;
+}
+
+.remoteVideoGroupWrapper {
   flex: 1 1 auto;
   overflow: hidden;
 }
 
-.localVideoContainer {
+.classroom.roomMode.isContentShareEnabled .remoteVideoGroupWrapper {
+  flex: 0 0 auto;
+}
+
+.localVideoWrapper {
   display: flex;
   position: relative;
   align-items: center;

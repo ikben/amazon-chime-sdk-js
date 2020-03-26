@@ -42,8 +42,20 @@
   display: flex;
 }
 
+.remoteVideo.roomMode.isContentShareEnabled .nameplate {
+  display: none;
+}
+
 .remoteVideo.screenShareMode .nameplate {
   display: none;
+}
+
+.remoteVideo.roomMode.isContentShareEnabled.large .nameplate {
+  display: flex !important;
+  padding: 0.2rem 0.2rem 0.2rem 0.3rem;
+  bottom: 0.25rem;
+  font-size: 0.75rem;
+  border-radius: 0.25rem;
 }
 
 .remoteVideo.screenShareMode.large .nameplate {

@@ -20,6 +20,7 @@ type Props = {
   size: Size;
   rosterAttendee?: RosterAttendeeType;
   raisedHand?: boolean;
+  isContentShareEnabled: boolean;
 };
 
 export default function RemoteVideo(props: Props) {
@@ -29,7 +30,8 @@ export default function RemoteVideo(props: Props) {
     videoElementRef,
     size = Size.Large,
     rosterAttendee = {},
-    raisedHand
+    raisedHand,
+    isContentShareEnabled
   } = props;
   const { name, muted } = rosterAttendee;
   return (
@@ -40,7 +42,8 @@ export default function RemoteVideo(props: Props) {
         enabled,
         small: size === Size.Small,
         medium: size === Size.Medium,
-        large: size === Size.Large
+        large: size === Size.Large,
+        isContentShareEnabled
       })}
     >
       <video muted ref={videoElementRef} className={styles.video} />

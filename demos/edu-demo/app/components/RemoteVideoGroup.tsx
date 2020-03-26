@@ -15,10 +15,11 @@ const MAX_REMOTE_VIDEOS = 16;
 
 type Props = {
   viewMode: ViewMode;
+  isContentShareEnabled: boolean;
 };
 
 export default function RemoteVideoGroup(props: Props) {
-  const { viewMode } = props;
+  const { viewMode, isContentShareEnabled } = props;
   const chime = useContext(getChimeContext());
   const roster = useContext(getRosterContext());
   const [visibleIndices, setVisibleIndices] = useState({});
@@ -105,7 +106,8 @@ export default function RemoteVideoGroup(props: Props) {
         `remoteVideoGroup-${numberOfVisibleIndices}`,
         {
           roomMode: viewMode === ViewMode.Room,
-          screenShareMode: viewMode === ViewMode.ScreenShare
+          screenShareMode: viewMode === ViewMode.ScreenShare,
+          isContentShareEnabled
         }
       )}
     >
@@ -133,6 +135,7 @@ export default function RemoteVideoGroup(props: Props) {
             size={getSize()}
             rosterAttendee={rosterAttendee}
             raisedHand={raisedHand}
+            isContentShareEnabled={isContentShareEnabled}
           />
         );
       })}

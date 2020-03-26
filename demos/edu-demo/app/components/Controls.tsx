@@ -129,21 +129,29 @@ export default function Controls(props: Props) {
           )}
         </button>
       </Tooltip>
-      {state.classMode === ClassMode.Teacher && viewMode === ViewMode.Room && (
-        <Tooltip placement="top" tooltip="Share screen">
-          <button
-            type="button"
-            className={cx('shareButton')}
-            onClick={() => {
-              onClickShareButton();
-            }}
-          >
-            <i className="fas fa-desktop" />
-          </button>
-        </Tooltip>
-      )}
-      {viewMode === ViewMode.Room && (
-        <Tooltip placement="top" tooltip={state.classMode === ClassMode.Teacher ? 'End classroom' : 'Leave classroom'}>
+      {state.classMode === ClassMode.Teacher &&
+        viewMode !== ViewMode.ScreenShare && (
+          <Tooltip placement="top" tooltip="Share screen">
+            <button
+              type="button"
+              className={cx('shareButton')}
+              onClick={() => {
+                onClickShareButton();
+              }}
+            >
+              <i className="fas fa-desktop" />
+            </button>
+          </Tooltip>
+        )}
+      {viewMode !== ViewMode.ScreenShare && (
+        <Tooltip
+          placement="top"
+          tooltip={
+            state.classMode === ClassMode.Teacher
+              ? 'End classroom'
+              : 'Leave classroom'
+          }
+        >
           <button
             type="button"
             className={cx('endButton')}

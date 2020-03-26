@@ -1,6 +1,6 @@
 import classNames from 'classnames/bind';
 import { ipcRenderer } from 'electron';
-import React, { useContext, useState } from 'react';
+import React, { useCallback, useContext, useState } from 'react';
 import Modal from 'react-modal';
 
 import getChimeContext from '../context/getChimeContext';
@@ -8,16 +8,17 @@ import getMeetingStatusContext from '../context/getMeetingStatusContext';
 import MeetingStatus from '../enums/MeetingStatus';
 import ViewMode from '../enums/ViewMode';
 import Chat from './Chat';
+import styles from './Classroom.css';
+import ContentVideo from './ContentVideo';
 import Controls from './Controls';
+import DeviceSwitcher from './DeviceSwitcher';
 import Error from './Error';
 import LoadingSpinner from './LoadingSpinner';
+import LocalVideo from './LocalVideo';
+import RemoteVideoGroup from './RemoteVideoGroup';
 import Roster from './Roster';
 import ScreenPicker from './ScreenPicker';
 import ScreenShareHeader from './ScreenShareHeader';
-import RemoteVideoGroup from './RemoteVideoGroup';
-import styles from './Classroom.css';
-import LocalVideo from './LocalVideo';
-import DeviceSwitcher from './DeviceSwitcher';
 
 const cx = classNames.bind(styles);
 
@@ -26,6 +27,7 @@ Modal.setAppElement('body');
 export default function Classroom() {
   const chime = useContext(getChimeContext());
   const { meetingStatus, errorMessage } = useContext(getMeetingStatusContext());
+  const [isContentShareEnabled, setIsContentShareEnabled] = useState(false);
   const [viewMode, setViewMode] = useState(ViewMode.Room);
   const [isModeTransitioning, setIsModeTransitioning] = useState(false);
   const [isPickerEnabled, setIsPickerEnabled] = useState(false);
@@ -47,12 +49,26 @@ export default function Classroom() {
     ipcRenderer.send('chime-disable-screen-share-mode');
   };
 
+  // Must pass a memoized callback to the ContentVideo component using useCallback().
+  // ContentVideo will re-render only when one dependency "viewMode" changes.
+  // See more comments in ContentVideo.
+  const onContentShareEnabled = useCallback(
+    async (enabled: boolean) => {
+      if (enabled && viewMode === ViewMode.ScreenShare) {
+        await stopContentShare();
+      }
+      setIsContentShareEnabled(enabled);
+    },
+    [viewMode]
+  );
+
   return (
     <div
       className={cx('classroom', {
         roomMode: viewMode === ViewMode.Room,
         screenShareMode: viewMode === ViewMode.ScreenShare,
-        isModeTransitioning
+        isModeTransitioning,
+        isContentShareEnabled
       })}
     >
       {meetingStatus === MeetingStatus.Loading && <LoadingSpinner />}
@@ -66,10 +82,16 @@ export default function Classroom() {
               {viewMode === ViewMode.ScreenShare && (
                 <ScreenShareHeader onClickStopButton={stopContentShare} />
               )}
-              <div className={cx('remoteVideoGroup')}>
-                <RemoteVideoGroup viewMode={viewMode} />
+              <div className={cx('contentVideoWrapper')}>
+                <ContentVideo onContentShareEnabled={onContentShareEnabled} />
               </div>
-              <div className={cx('localVideoContainer')}>
+              <div className={cx('remoteVideoGroupWrapper')}>
+                <RemoteVideoGroup
+                  viewMode={viewMode}
+                  isContentShareEnabled={isContentShareEnabled}
+                />
+              </div>
+              <div className={cx('localVideoWrapper')}>
                 <div className={cx('controls')}>
                   <Controls
                     viewMode={viewMode}
