@@ -135,12 +135,15 @@ export default function Controls(props: Props) {
             await new Promise(resolve => setTimeout(resolve, 10));
             if (videoStatus === VideoStatus.Disabled) {
               setVideoStatus(VideoStatus.Loading);
-              const videoInputs = await chime.audioVideo.listVideoInputDevices();
-              await chime.audioVideo.chooseVideoInputDevice(
-                videoInputs[0].deviceId
-              );
-              chime.audioVideo.startLocalVideoTile();
-              setVideoStatus(VideoStatus.Enabled);
+              try {
+                await chime.chooseVideoInputDevice(chime.currentVideoInputDevice);
+                chime.audioVideo.startLocalVideoTile();
+                setVideoStatus(VideoStatus.Enabled);
+              } catch (error) {
+                // eslint-disable-next-line
+                console.error(error);
+                setVideoStatus(VideoStatus.Disabled);
+              }
             } else if (videoStatus === VideoStatus.Enabled) {
               setVideoStatus(VideoStatus.Loading);
               chime.audioVideo.stopLocalVideoTile();
@@ -183,7 +186,6 @@ export default function Controls(props: Props) {
             className={cx('endButton')}
             onClick={() => {
               chime.leaveRoom(state.classMode === ClassMode.Teacher);
-              chime.leaveRoomMessaging();
               history.push(routes.HOME);
             }}
           >

@@ -27,6 +27,8 @@ import getMessagingWssUrl from '../utils/getMessagingWssUrl';
 
 export class ChimeSdkWrapper
   implements AudioVideoObserver, ContentShareObserver, DeviceChangeObserver {
+  private static WEB_SOCKET_TIMEOUT_MS = 10000;
+
   meetingSession: MeetingSession;
 
   audioVideo: AudioVideoFacade;
@@ -264,7 +266,7 @@ export class ChimeSdkWrapper
       new FullJitterBackoff(1000, 0, 10000)
     );
 
-    await this.messagingSocket.open(10000);
+    await this.messagingSocket.open(ChimeSdkWrapper.WEB_SOCKET_TIMEOUT_MS);
 
     this.messagingSocket.addEventListener('message', event => {
       try {
@@ -301,9 +303,10 @@ export class ChimeSdkWrapper
   };
 
   leaveRoom = async (end: boolean): Promise<void> => {
-    this.audioVideo.stop();
-
     try {
+      this.audioVideo.stop();
+      await this.leaveRoomMessaging();
+
       // eslint-disable-next-line
       if (end) {
         await fetch(
@@ -321,7 +324,7 @@ export class ChimeSdkWrapper
   };
 
   leaveRoomMessaging = async (): Promise<void> => {
-    await this.messagingSocket.close();
+    await this.messagingSocket.close(ChimeSdkWrapper.WEB_SOCKET_TIMEOUT_MS);
   };
 
   /**
@@ -488,9 +491,9 @@ export class ChimeSdkWrapper
    * Utilities
    * ====================================================================
    */
-  private logError =(error: Error) => {
+  private logError = (error: Error) => {
     // eslint-disable-next-line
-    console.error(event);
+    console.error(error);
   };
 }
 
