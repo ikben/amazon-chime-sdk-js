@@ -93,6 +93,12 @@ function getNotificationsConfig() {
   return {}
 }
 
+function simplifyTitle(title) {
+  // Strip out most symbolic characters and whitespace and make case insensitive,
+  // but preserve any Unicode characters outside of the ASCII range.
+  return (title || '').replace(/[\s()!@#$%^&*`~_=+{}|\\;:'",.<>/?\[\]-]+/gu, '').toLowerCase() || null;
+}
+
 // ===== Join or create meeting ===================================
 exports.createMeeting = async(event, context, callback) => {
   var response = {
@@ -101,7 +107,7 @@ exports.createMeeting = async(event, context, callback) => {
     "body": '',
     "isBase64Encoded": false
   };
-
+  event.queryStringParameters.title = simplifyTitle(event.queryStringParameters.title);
   if (!event.queryStringParameters.title) {
     response["statusCode"] = 400;
     response["body"] = "Must provide title";
@@ -141,6 +147,7 @@ exports.join = async(event, context, callback) => {
     "isBase64Encoded": false
   };
 
+  event.queryStringParameters.title = simplifyTitle(event.queryStringParameters.title);
   if (!event.queryStringParameters.title || !event.queryStringParameters.name) {
     response["statusCode"] = 400;
     response["body"] = "Must provide title and name";
@@ -189,6 +196,7 @@ exports.attendee = async(event, context, callback) => {
     "body": '',
     "isBase64Encoded": false
   };
+  event.queryStringParameters.title = simplifyTitle(event.queryStringParameters.title);
   const title = event.queryStringParameters.title;
   const attendeeId = event.queryStringParameters.attendee;
   const attendeeInfo = {
@@ -208,6 +216,7 @@ exports.end = async(event, context, callback) => {
     "body": '',
     "isBase64Encoded": false
   };
+  event.queryStringParameters.title = simplifyTitle(event.queryStringParameters.title);
   const title = event.queryStringParameters.title;
   let meetingInfo = await getMeeting(title);
   await chime.deleteMeeting({
