@@ -30,10 +30,16 @@ export default function Login() {
         <h1 className={cx('title')}>Tell me about you</h1>
         <div className={cx('selection')}>
           <div className={cx('teacher')}>
-            <h2>Teacher</h2>
+            <h2>Teachers can</h2>
             <ul>
-              <li>Can create a classroom</li>
-              <li>Can share screen</li>
+              <li>Create a classroom</li>
+              <li>Share audio, video, and screen</li>
+              <li>Send chat messages</li>
+              <li>Toggle on focus mode:</li>
+              <ul>
+                <li>Focus mutes all students</li>
+                <li>Focus turns off student chat</li>
+              </ul>
             </ul>
             <button
               type="button"
@@ -55,10 +61,16 @@ export default function Login() {
             </button>
           </div>
           <div className={cx('student')}>
-            <h2>Student</h2>
+            <h2>Students can</h2>
             <ul>
-              <li>Can join a classroom</li>
-              <li>Can raise hands</li>
+              <li>Join a classroom</li>
+              <li>Share video</li>
+              <li>Raise hand</li>
+              <li>When focus is off:</li>
+              <ul>
+                <li>Unmute and send audio</li>
+                <li>Send chat messages</li>
+              </ul>
             </ul>
             <button
               type="button"

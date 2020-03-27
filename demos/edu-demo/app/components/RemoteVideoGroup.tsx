@@ -112,7 +112,7 @@ export default function RemoteVideoGroup(props: Props) {
       )}
     >
       {numberOfVisibleIndices === 0 && (
-        <div className={cx('instruction')}>No video</div>
+        <div className={cx('instruction')}>No one is sharing video</div>
       )}
       {Array.from(Array(MAX_REMOTE_VIDEOS).keys()).map((key, index) => {
         const visibleIndex = visibleIndices[index];
