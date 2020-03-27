@@ -35,7 +35,7 @@ export default function Login() {
               <li>Create a classroom</li>
               <li>Share audio, video, and screen</li>
               <li>Send chat messages</li>
-              <li>Toggle on focus mode:</li>
+              <li>Toggle focus:</li>
               <ul>
                 <li>Focus mutes all students</li>
                 <li>Focus turns off student chat</li>
@@ -68,7 +68,7 @@ export default function Login() {
               <li>Raise hand</li>
               <li>When focus is off:</li>
               <ul>
-                <li>Unmute and send audio</li>
+                <li>Unmute and share audio</li>
                 <li>Send chat messages</li>
               </ul>
             </ul>

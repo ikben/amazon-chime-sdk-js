@@ -7,7 +7,9 @@ import { useHistory, useLocation } from 'react-router-dom';
 
 import getChimeContext from '../context/getChimeContext';
 import getMeetingStatusContext from '../context/getMeetingStatusContext';
+import getUIStateContext from '../context/getUIStateContext';
 import MeetingStatus from '../enums/MeetingStatus';
+import ClassMode from '../enums/ClassMode';
 
 type Props = {
   children: ReactNode;
@@ -20,6 +22,7 @@ export default function MeetingStatusProvider(props: Props) {
   const [meetingStatus, setMeetingStatus] = useState({
     meetingStatus: MeetingStatus.Loading
   });
+  const [state] = useContext(getUIStateContext());
   const history = useHistory();
   const query = new URLSearchParams(useLocation().search);
   const audioElement = useRef(null);
@@ -30,7 +33,8 @@ export default function MeetingStatusProvider(props: Props) {
         await chime.createRoom(
           query.get('title'),
           query.get('name'),
-          query.get('region')
+          query.get('region'),
+          state.classMode === ClassMode.Student ? 'student' : 'teacher',
         );
 
         setMeetingStatus({

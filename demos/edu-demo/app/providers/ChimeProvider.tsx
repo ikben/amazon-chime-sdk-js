@@ -81,11 +81,11 @@ export class ChimeSdkWrapper
   };
 
   // eslint-disable-next-line
-  createRoom = async (title: string, name: string, region: string): Promise<any> => {
+  createRoom = async (title: string, name: string, region: string, role: string): Promise<any> => {
     const response = await fetch(
       `${getBaseUrl()}join?title=${encodeURIComponent(
         title
-      )}&name=${encodeURIComponent(name)}&region=${encodeURIComponent(region)}`,
+      )}&name=${encodeURIComponent(name)}&region=${encodeURIComponent(region)}&role=${encodeURIComponent(role)}`,
       {
         method: 'POST'
       }
@@ -96,6 +96,9 @@ export class ChimeSdkWrapper
     }
 
     const { JoinInfo } = json;
+    if (!JoinInfo) {
+      throw new Error('Classroom does not exist');
+    }
     this.configuration = new MeetingSessionConfiguration(
       JoinInfo.Meeting,
       JoinInfo.Attendee
@@ -359,7 +362,7 @@ export class ChimeSdkWrapper
    * Observer methods
    * ====================================================================
    */
-  
+
   audioInputsChanged(freshAudioInputDeviceList: MediaDeviceInfo[]): void {
     let hasCurrentDevice: boolean = false;
     this.audioInputDevices = [];
@@ -443,7 +446,7 @@ export class ChimeSdkWrapper
       });
     });
   };
-  
+
   subscribeToRosterUpdate = (callback: (roster: RosterType) => void) => {
     this.rosterUpdateCallbacks.push(callback);
   };

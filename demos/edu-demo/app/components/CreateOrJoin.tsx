@@ -42,7 +42,7 @@ export default function CreateOrJoin() {
             onChange={event => {
               setTitle(event.target.value);
             }}
-            placeholder="Title"
+            placeholder="Classroom"
           />
           <input
             className={cx('nameInput')}
@@ -57,8 +57,8 @@ export default function CreateOrJoin() {
         </form>
         <Link className={cx('loginLink')} to={routes.LOGIN}>
           {state.classMode === ClassMode.Teacher
-            ? 'Not a teacher? Click here'
-            : 'Not a student? Click here'}
+            ? 'Not a teacher? Click here.'
+            : 'Not a student? Click here.'}
         </Link>
       </div>
     </div>

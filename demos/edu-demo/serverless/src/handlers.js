@@ -158,7 +158,7 @@ exports.join = async(event, context, callback) => {
   const name = event.queryStringParameters.name;
   const region = event.queryStringParameters.region || 'us-east-1';
   let meetingInfo = await getMeeting(title);
-  if (!meetingInfo) {
+  if (!meetingInfo && event.queryStringParameters.role !== 'student') {
     const request = {
       ClientRequestToken: uuid(),
       MediaRegion: region,
