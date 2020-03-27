@@ -1,6 +1,6 @@
 var AWS = require('./aws-sdk');
 var ddb = new AWS.DynamoDB();
-const chime = new AWS.Chime({region: 'us-east-1'});
+const chime = new AWS.Chime({ region: 'us-east-1' });
 chime.endpoint = new AWS.Endpoint('https://service.chime.aws.amazon.com/console');
 
 const oneDayFromNow = Math.floor(Date.now() / 1000) + 60 * 60 * 24;
@@ -13,13 +13,13 @@ const provideQueueArn = process.env.USE_EVENT_BRIDGE === 'false';
 const logGroupName = process.env.BROWSER_LOG_GROUP_NAME;
 
 function uuid() {
-  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
     var r = Math.random() * 16 | 0, v = c === 'x' ? r : (r & 0x3 | 0x8);
     return v.toString(16);
   });
 }
 
-const getMeeting = async (meetingTitle) => {
+const getMeeting = async(meetingTitle) => {
   const result = await ddb.getItem({
     TableName: meetingsTableName,
     Key: {
@@ -35,12 +35,12 @@ const getMeeting = async (meetingTitle) => {
   return meetingData;
 }
 
-const putMeeting = async (title, meetingInfo) => {
+const putMeeting = async(title, meetingInfo) => {
   await ddb.putItem({
     TableName: meetingsTableName,
     Item: {
-      'Title': {S: title},
-      'Data': {S: JSON.stringify(meetingInfo)},
+      'Title': { S: title },
+      'Data': { S: JSON.stringify(meetingInfo) },
       'TTL': {
         N: '' + oneDayFromNow
       }
@@ -48,7 +48,7 @@ const putMeeting = async (title, meetingInfo) => {
   }).promise();
 }
 
-const getAttendee = async (title, attendeeId) => {
+const getAttendee = async(title, attendeeId) => {
   const result = await ddb.getItem({
     TableName: attendeesTableName,
     Key: {
@@ -63,14 +63,14 @@ const getAttendee = async (title, attendeeId) => {
   return result.Item.Name.S;
 }
 
-const putAttendee = async (title, attendeeId, name) => {
+const putAttendee = async(title, attendeeId, name) => {
   await ddb.putItem({
     TableName: attendeesTableName,
     Item: {
       'AttendeeId': {
         S: `${title}/${attendeeId}`
       },
-      'Name': {S: name},
+      'Name': { S: name },
       'TTL': {
         N: '' + oneDayFromNow
       }
@@ -80,7 +80,7 @@ const putAttendee = async (title, attendeeId, name) => {
 
 function getNotificationsConfig() {
   if (provideQueueArn) {
-    return {
+    return  {
       SqsQueueArn: sqsQueueArn,
     };
   }
@@ -88,7 +88,7 @@ function getNotificationsConfig() {
 }
 
 // ===== Join or create meeting ===================================
-exports.createMeeting = async (event, context, callback) => {
+exports.createMeeting = async(event, context, callback) => {
   var response = {
     "statusCode": 200,
     "headers": {},
@@ -127,7 +127,7 @@ exports.createMeeting = async (event, context, callback) => {
   callback(null, response);
 };
 
-exports.join = async (event, context, callback) => {
+exports.join = async(event, context, callback) => {
   var response = {
     "statusCode": 200,
     "headers": {},
@@ -158,9 +158,9 @@ exports.join = async (event, context, callback) => {
 
   console.info('Adding new attendee');
   const attendeeInfo = (await chime.createAttendee({
-    MeetingId: meetingInfo.Meeting.MeetingId,
-    ExternalUserId: uuid(),
-  }).promise());
+      MeetingId: meetingInfo.Meeting.MeetingId,
+      ExternalUserId: uuid(),
+    }).promise());
 
   putAttendee(title, attendeeInfo.Attendee.AttendeeId, name);
 
@@ -176,7 +176,7 @@ exports.join = async (event, context, callback) => {
   callback(null, response);
 };
 
-exports.attendee = async (event, context, callback) => {
+exports.attendee = async(event, context, callback) => {
   var response = {
     "statusCode": 200,
     "headers": {},
@@ -195,20 +195,7 @@ exports.attendee = async (event, context, callback) => {
   callback(null, response);
 };
 
-async function ensureLogStream(cloudWatchClient, logStreamName) {
-  var describeLogStreamsParams = {
-    "logGroupName": logGroupName,
-    "logStreamNamePrefix": logStreamName
-  };
-  var response = await cloudWatchClient.describeLogStreams(describeLogStreamsParams).promise();
-  var foundStream = response.logStreams.find(s => s.logStreamName === logStreamName);
-  if (foundStream) {
-    return foundStream.uploadSequenceToken;
-  }
-  return null;
-}
-
-exports.logs = async (event, context) => {
+exports.end = async(event, context, callback) => {
   var response = {
     "statusCode": 200,
     "headers": {},
