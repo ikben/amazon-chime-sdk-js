@@ -24,20 +24,39 @@ import MessageType from '../types/MessageType';
 import RosterType from '../types/RosterType';
 import getBaseUrl from '../utils/getBaseUrl';
 import getMessagingWssUrl from '../utils/getMessagingWssUrl';
+import RegionType from '../types/RegionType';
+import FullRegionInfoType from '../types/FullRegionInfoType';
 
 export class ChimeSdkWrapper
   implements AudioVideoObserver, ContentShareObserver, DeviceChangeObserver {
   private static WEB_SOCKET_TIMEOUT_MS = 10000;
 
-  meetingSession: MeetingSession;
+  meetingSession: MeetingSession | null = null;
 
-  audioVideo: AudioVideoFacade;
+  audioVideo: AudioVideoFacade | null = null;
 
-  title: string;
+  title: string | null = null;
 
-  name: string;
+  name: string | null = null;
 
-  region: string;
+  region: string | null = null;
+  closestChimeRegion: RegionType = {};
+  supportedChimeRegions: RegionType[] = [
+    { label: 'United States (N. Virginia)', value: 'us-east-1' }, 
+    { label: 'Japan (Tokyo)', value: 'ap-northeast-1' }, 
+    { label: 'Singapore', value: 'ap-southeast-1' }, 
+    { label: 'Australia (Sydney)', value: 'ap-southeast-2' }, 
+    { label: 'Canada', value: 'ca-central-1' },
+    { label: 'Germany (Frankfurt)', value: 'eu-central-1' },
+    { label: 'Sweden (Stockholm)', value: 'eu-north-1' },
+    { label: 'Ireland', value: 'eu-west-1' },
+    { label: 'United Kingdom (London)', value: 'eu-west-2' },
+    { label: 'France (Paris)', value: 'eu-west-3' },
+    { label: 'Brazil (São Paulo)', value: 'sa-east-1' },
+    { label: 'United States (Ohio)', value: 'us-east-2' },
+    { label: 'United States (N. California)', value: 'us-west-1' },
+    { label: 'United States (Oregon)', value: 'us-west-2' }];
+  regionChangedCallbacks: ((fullRegionInfo: FullRegionInfoType) => void)[] = [];
 
   currentAudioInputDevice: DeviceType = {};
 
@@ -57,13 +76,13 @@ export class ChimeSdkWrapper
 
   rosterUpdateCallbacks: ((roster: RosterType) => void)[] = [];
 
-  configuration: MeetingSessionConfiguration = null;
+  configuration: MeetingSessionConfiguration | null = null;
 
-  messagingSocket: ReconnectingPromisedWebSocket = null;
+  messagingSocket: ReconnectingPromisedWebSocket | null = null;
 
   messageUpdateCallbacks: ((message: MessageType) => void)[] = [];
 
-  private initializeSdkWrapper = () => {
+  initializeSdkWrapper = async () => {
     this.meetingSession = null;
     this.audioVideo = null;
     this.title = null;
@@ -80,14 +99,59 @@ export class ChimeSdkWrapper
     this.configuration = null;
     this.messagingSocket = null;
     this.messageUpdateCallbacks = [];
+
+    await this.lookupClosestChimeRegion();
+  };
+
+  /*
+   * ====================================================================
+   * regions
+   * ====================================================================
+   */
+  lookupClosestChimeRegion = async (): Promise<void> => {
+    const response = await fetch(
+      `https://l.chime.aws`,
+      {
+        method: 'GET'
+      }
+    );
+    const json = await response.json();
+    if (json.error) {
+      throw new Error(`Server error: ${json.error}`);
+    }
+
+    this.supportedChimeRegions.forEach((chimeRegion: RegionType) => {
+      if (chimeRegion.value === json.region) {
+        this.closestChimeRegion =  { label: chimeRegion.label, value: json.region };
+        this.region = json.value;
+        this.regionChangedCallbacks.forEach((regionChangedCallback: (fullRegionInfo: FullRegionInfoType) => void) => {
+          regionChangedCallback({
+            currentRegion: this.closestChimeRegion,
+            supportedChimeRegions: this.supportedChimeRegions
+          });
+        });
+      }
+    });
+  }
+
+  subscribeToRegionChanged = (regionChangedCallback: () => void) => {
+    this.regionChangedCallbacks.push(regionChangedCallback);
+  };
+
+  unsubscribeFromRegionChanged = (regionChangedCallback: () => void) => {
+    let index = this.regionChangedCallbacks.indexOf(regionChangedCallback);
+    if (index !== -1) {
+      this.regionChangedCallbacks.splice(index, 1);
+    }
   };
 
   // eslint-disable-next-line
   createRoom = async (title: string, name: string, region: string, role: string): Promise<any> => {
+    let selectedRegion: string = region ? region : (this.region ? this.region : '');
     const response = await fetch(
       `${getBaseUrl()}join?title=${encodeURIComponent(
         title
-      )}&name=${encodeURIComponent(name)}&region=${encodeURIComponent(region)}&role=${encodeURIComponent(role)}`,
+      )}&name=${encodeURIComponent(name)}&region=${encodeURIComponent(selectedRegion)}&role=${encodeURIComponent(role)}`,
       {
         method: 'POST'
       }
@@ -109,7 +173,7 @@ export class ChimeSdkWrapper
 
     this.title = title;
     this.name = name;
-    this.region = region;
+    this.region = selectedRegion;
   };
 
   initializeMeetingSession = async (
@@ -504,6 +568,7 @@ type Props = {
 export default function ChimeProvider(props: Props) {
   const { children } = props;
   const chimeSdkWrapper = new ChimeSdkWrapper();
+  chimeSdkWrapper.initializeSdkWrapper();
   const ChimeContext = getChimeContext();
   return (
     <ChimeContext.Provider value={chimeSdkWrapper}>

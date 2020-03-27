@@ -71,3 +71,71 @@
 .loginLink:hover {
   text-decoration: underline;
 }
+
+.regionsList {
+  margin-bottom: 0.75rem;
+  border-radius: 0.25rem;
+  border: 1px solid var(--color_slightly_dark_chalk);
+}
+
+.control {
+  background-color: transparent;
+  cursor: pointer;
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+  transition: none;
+  border-radius: 0.25rem;
+  font-size: 0.9rem;
+  padding: 0.5rem;
+}
+
+.control:hover {
+  background-color: var(--color_chalkboard);
+  color: var(--color_chalk)
+}
+
+.arrow {
+  border-color: var(--color_slightly_dark_chalk) transparent transparent;
+  border-width: 0.3rem 0.3rem 0;
+  margin-top: 2px;
+  margin-right: 0.25rem;
+}
+
+.dropdown[class~='is-open'] .arrow {
+  border-color: var(--color_slightly_dark_chalk) transparent transparent !important;
+  border-width: 0.3rem 0.3rem 0 !important;
+}
+
+.menu {
+  margin: 0;
+  padding: 0.5rem;
+  color: var(--color_slightly_dark_chalk);
+  background-color: var(--color_dark_chalkboard);
+  box-shadow: 0 0.25rem 0.5rem var(--color_shadow);
+  overflow: hidden;
+  font-size: 0.9rem;
+  border: none;
+  max-height: none;
+  border-radius: 0.25rem;
+  height: 20rem;
+  overflow-y: scroll;
+}
+
+.menu *[class~='Dropdown-option'] {
+  color: var(--color_darker_chalk);
+  border-radius: 0.25rem;
+}
+
+.menu *[class~='Dropdown-option']:hover {
+  background-color: #1b1b1b;
+}
+
+.menu *[class~='is-selected'] {
+  background-color: transparent;
+  color: var(--color_chalk);
+}
+
+.menu *[class~='is-selected']:hover {
+  background-color: #1b1b1b;
+}
