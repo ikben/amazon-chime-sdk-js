@@ -1,6 +1,7 @@
 import classNames from 'classnames/bind';
 import { desktopCapturer } from 'electron';
 import React, { useEffect, useState } from 'react';
+import { FormattedMessage } from 'react-intl';
 
 import LoadingSpinner from './LoadingSpinner';
 import styles from './ScreenPicker.css';
@@ -64,7 +65,7 @@ export default function ScreenPicker(props: Props) {
   return (
     <div className={cx('screenPicker')}>
       <div className={cx('top')}>
-        <h1 className={cx('header')}>Share your screen</h1>
+        <h1 className={cx('header')}><FormattedMessage id="ScreenPicker.title" /></h1>
         <div className={cx('tabs')}>
           <button
             type="button"
@@ -75,7 +76,7 @@ export default function ScreenPicker(props: Props) {
               setShareType(ShareType.Window);
             }}
           >
-            Application window
+            <FormattedMessage id="ScreenPicker.applicationWindowTab" />
           </button>
           <button
             type="button"
@@ -86,7 +87,7 @@ export default function ScreenPicker(props: Props) {
               setShareType(ShareType.Screen);
             }}
           >
-            Your entire screen
+            <FormattedMessage id="ScreenPicker.yourEntireScreenTab" />
           </button>
         </div>
       </div>
@@ -97,7 +98,7 @@ export default function ScreenPicker(props: Props) {
       >
         {!sources && <LoadingSpinner />}
         {sources && selectedSources && !selectedSources.length && (
-          <div className={cx('noScreen')}>No screen</div>
+          <div className={cx('noScreen')}><FormattedMessage id="ScreenPicker.noScreen" /></div>
         )}
         {sources &&
           selectedSources &&
@@ -130,7 +131,7 @@ export default function ScreenPicker(props: Props) {
               onClickCancelButton();
             }}
           >
-            Cancel
+            <FormattedMessage id="ScreenPicker.cancel" />
           </button>
           <button
             type="button"
@@ -142,7 +143,7 @@ export default function ScreenPicker(props: Props) {
               onClickShareButton(selectedSourceId);
             }}
           >
-            Share
+            <FormattedMessage id="ScreenPicker.share" />
           </button>
         </div>
       </div>

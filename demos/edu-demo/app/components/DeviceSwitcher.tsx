@@ -1,6 +1,7 @@
 import classNames from 'classnames/bind';
 import React, { useContext, useEffect, useState } from 'react';
 import Dropdown from 'react-dropdown';
+import { useIntl } from 'react-intl';
 
 import DeviceType from '../types/DeviceType';
 import FullDeviceInfoType from '../types/FullDeviceInfoType';
@@ -19,6 +20,7 @@ export default function DeviceSwitcher() {
     audioOutputDevices: chime.audioOutputDevices,
     videoInputDevices: chime.videoInputDevices
   });
+  const intl = useIntl();
 
   useEffect(() => {
     const devicesUpdatedCallback = (fullDeviceInfo: FullDeviceInfoType) => {
@@ -52,7 +54,9 @@ export default function DeviceSwitcher() {
             currentAudioInputDevice: selectedDevice
           });
         }}
-        placeholder="No microphone"
+        placeholder={intl.formatMessage({
+          id: 'DeviceSwitcher.noAudioInputPlaceholder'
+        })}
       />
       <Dropdown
         className={cx('dropdown')}
@@ -71,7 +75,9 @@ export default function DeviceSwitcher() {
             currentAudioOutputDevice: selectedDevice
           });
         }}
-        placeholder="No speaker"
+        placeholder={intl.formatMessage({
+          id: 'DeviceSwitcher.noAudioOutputPlaceholder'
+        })}
       />
       <Dropdown
         className={cx('dropdown')}
@@ -90,7 +96,9 @@ export default function DeviceSwitcher() {
             currentVideoInputDevice: selectedDevice
           });
         }}
-        placeholder="No video device"
+        placeholder={intl.formatMessage({
+          id: 'DeviceSwitcher.noVideoInputPlaceholder'
+        })}
       />
     </div>
   );

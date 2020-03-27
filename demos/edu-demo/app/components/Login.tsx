@@ -1,6 +1,7 @@
 import classNames from 'classnames/bind';
 import React, { useContext, useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
+import { FormattedMessage } from 'react-intl';
 
 import localStorageKeys from '../constants/localStorageKeys.json';
 import routes from '../constants/routes.json';
@@ -27,18 +28,18 @@ export default function Login() {
   return (
     <div className={cx('login')}>
       <div className={cx('content')}>
-        <h1 className={cx('title')}>Tell me about you</h1>
+        <h1 className={cx('title')}><FormattedMessage id="Login.title" /></h1>
         <div className={cx('selection')}>
           <div className={cx('teacher')}>
-            <h2>Teachers can</h2>
+            <h2><FormattedMessage id="Login.teacherTitle" /></h2>
             <ul>
-              <li>Create a classroom</li>
-              <li>Share audio, video, and screen</li>
-              <li>Send chat messages</li>
-              <li>Toggle focus:</li>
+              <li><FormattedMessage id="Login.teacherDescription1" /></li>
+              <li><FormattedMessage id="Login.teacherDescription2" /></li>
+              <li><FormattedMessage id="Login.teacherDescription3" /></li>
+              <li><FormattedMessage id="Login.teacherDescription4" /></li>
               <ul>
-                <li>Focus mutes all students</li>
-                <li>Focus turns off student chat</li>
+                <li><FormattedMessage id="Login.teacherToggleDescription1" /></li>
+                <li><FormattedMessage id="Login.teacherToggleDescription2" /></li>
               </ul>
             </ul>
             <button
@@ -57,19 +58,19 @@ export default function Login() {
                 history.push(routes.CREATE_OR_JOIN);
               }}
             >
-              I&apos;m a teacher
+              <FormattedMessage id="Login.teacherButton" />
             </button>
           </div>
           <div className={cx('student')}>
-            <h2>Students can</h2>
+            <h2><FormattedMessage id="Login.studentTitle" /></h2>
             <ul>
-              <li>Join a classroom</li>
-              <li>Share video</li>
-              <li>Raise hand</li>
-              <li>When focus is off:</li>
+              <li><FormattedMessage id="Login.studentDescription1" /></li>
+              <li><FormattedMessage id="Login.studentDescription2" /></li>
+              <li><FormattedMessage id="Login.studentDescription3" /></li>
+              <li><FormattedMessage id="Login.studentDescription4" /></li>
               <ul>
-                <li>Unmute and share audio</li>
-                <li>Send chat messages</li>
+                <li><FormattedMessage id="Login.studentToggleDescription1" /></li>
+                <li><FormattedMessage id="Login.studentToggleDescription2" /></li>
               </ul>
             </ul>
             <button
@@ -88,7 +89,7 @@ export default function Login() {
                 history.push(routes.CREATE_OR_JOIN);
               }}
             >
-              I&apos;m a student
+              <FormattedMessage id="Login.studentButton" />
             </button>
           </div>
         </div>

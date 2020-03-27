@@ -38,6 +38,10 @@
   font-size: 1.1rem;
 }
 
+.selection ul ul {
+  padding-top: 0.5rem;
+}
+
 .selection li + li {
   margin-top: 0.5rem;
 }

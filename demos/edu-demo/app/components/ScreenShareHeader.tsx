@@ -1,5 +1,6 @@
 import classNames from 'classnames/bind';
 import React, { useContext } from 'react';
+import { FormattedMessage } from 'react-intl';
 
 import getRosterContext from '../context/getRosterContext';
 import styles from './ScreenShareHeader.css';
@@ -20,10 +21,12 @@ export default function ScreenShareHeader(props: Props) {
         type="button"
         onClick={onClickStopButton}
       >
-        Stop sharing
+        <FormattedMessage id="ScreenShareHeader.stopSharing" />        
       </button>
       <div className={cx('description')}>
-        {roster ? `${Object.keys(roster).length - 1} online` : ` `}
+        {roster ? <FormattedMessage id="ScreenShareHeader.online" values={{
+          number: Object.keys(roster).length - 1
+        }} /> : ` `}
       </div>
     </div>
   );

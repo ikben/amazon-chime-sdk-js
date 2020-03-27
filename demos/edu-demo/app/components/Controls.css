@@ -24,8 +24,8 @@
   opacity: 1;
 }
 
-.controls.screenShareMode.audioMuted.videoEnabled::before {
-  content: 'Mic muted';
+.micMuted {
+  display: none;
   z-index: 0;
   position: absolute;
   top: 0;
@@ -34,11 +34,14 @@
   height: 100%;
   background-color: var(--color_black_medium_opacity);
   text-align: center;
-  display: flex;
   justify-content: center;
   border-radius: 0.25rem;
   font-size: 1rem;
   padding: 1rem;
+}
+
+.controls.screenShareMode.audioMuted.videoEnabled .micMuted {
+  display: flex;
 }
 
 .controls.screenShareMode.audioMuted.videoEnabled .muteButton {

@@ -1,5 +1,6 @@
 import classNames from 'classnames/bind';
 import React, { useContext, useEffect, useState } from 'react';
+import { useIntl } from 'react-intl';
 
 import getChimeContext from '../context/getChimeContext';
 import getRosterContext from '../context/getRosterContext';
@@ -14,6 +15,7 @@ export default function Roster() {
   const roster = useContext(getRosterContext());
   const [videoAttendees, setVideoAttendees] = useState(new Set());
   const raisedHandAttendees = useRaisedHandAttendees();
+  const intl = useIntl();
 
   useEffect(() => {
     const tileIds: { [tileId: number]: string } = {};
@@ -64,7 +66,11 @@ export default function Roster() {
                 <div className={cx('raisedHand')}>
                   <span
                     role="img"
-                    aria-label={`Raised hand by ${rosterAttendee.name}`}
+                    aria-label={intl.formatMessage({
+                      id: 'Roster.raiseHandAriaLabel'
+                    }, {
+                      name: rosterAttendee.name
+                    })}
                   >
                     ✋
                   </span>

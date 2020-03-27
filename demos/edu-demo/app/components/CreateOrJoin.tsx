@@ -1,6 +1,7 @@
 import classNames from 'classnames/bind';
 import React, { useContext, useState } from 'react';
 import { Link, useHistory } from 'react-router-dom';
+import { useIntl, FormattedMessage } from 'react-intl';
 
 import routes from '../constants/routes.json';
 import getUIStateContext from '../context/getUIStateContext';
@@ -15,14 +16,15 @@ export default function CreateOrJoin() {
   const [name, setName] = useState('');
   const history = useHistory();
   const region = 'us-east-1';
+  const intl = useIntl();
 
   return (
     <div className={cx('createOrJoin')}>
       <div className={cx('formWrapper')}>
         <h1 className={cx('title')}>
           {state.classMode === ClassMode.Teacher
-            ? 'Create or join a classroom'
-            : 'Join a classroom'}
+            ? <FormattedMessage id="CreateOrJoin.teacherTitle" />
+            : <FormattedMessage id="CreateOrJoin.studentTitle" />}
         </h1>
         <form
           className={cx('form')}
@@ -42,23 +44,23 @@ export default function CreateOrJoin() {
             onChange={event => {
               setTitle(event.target.value);
             }}
-            placeholder="Classroom"
+            placeholder={intl.formatMessage({ id: 'CreateOrJoin.titlePlaceholder' })}
           />
           <input
             className={cx('nameInput')}
             onChange={event => {
               setName(event.target.value);
             }}
-            placeholder="Your name"
+            placeholder={intl.formatMessage({ id: 'CreateOrJoin.namePlaceholder' })}
           />
           <button className={cx('button')} type="submit">
-            Continue
+            <FormattedMessage id="CreateOrJoin.continueButton" />
           </button>
         </form>
         <Link className={cx('loginLink')} to={routes.LOGIN}>
           {state.classMode === ClassMode.Teacher
-            ? 'Not a teacher? Click here.'
-            : 'Not a student? Click here.'}
+            ? <FormattedMessage id="CreateOrJoin.notTeacherLink" />
+            : <FormattedMessage id="CreateOrJoin.notStudentLink" />}
         </Link>
       </div>
     </div>

@@ -1,5 +1,6 @@
 import classNames from 'classnames/bind';
 import React, { useContext, useEffect, useState } from 'react';
+import { useIntl } from 'react-intl';
 
 import getChimeContext from '../context/getChimeContext';
 import getUIStateContext from '../context/getUIStateContext';
@@ -17,6 +18,7 @@ export default React.memo(function ChatInput() {
   const [inputText, setInputText] = useState('');
   const [raised, setRaised] = useState(false);
   const focusMode = useFocusMode();
+  const intl = useIntl();
 
   useEffect(() => {
     if (!chime.configuration) {
@@ -69,7 +71,7 @@ export default React.memo(function ChatInput() {
               setInputText('');
             }
           }}
-          placeholder="Type a chat message"
+          placeholder={intl.formatMessage({ id: 'ChatInput.inputPlaceholder' })}
         />
         {state.classMode === ClassMode.Student && (
           <button
@@ -81,7 +83,7 @@ export default React.memo(function ChatInput() {
               setRaised(!raised);
             }}
           >
-            <span role="img" aria-label="Raise hand">
+            <span role="img" aria-label={intl.formatMessage({ id: 'ChatInput.raiseHandAriaLabel' })}>
               ✋
             </span>
           </button>

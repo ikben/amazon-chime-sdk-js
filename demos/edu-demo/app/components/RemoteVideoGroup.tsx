@@ -1,6 +1,7 @@
 import { VideoTileState } from 'amazon-chime-sdk-js';
 import classNames from 'classnames/bind';
 import React, { useCallback, useContext, useEffect, useState } from 'react';
+import { FormattedMessage } from 'react-intl';
 
 import getChimeContext from '../context/getChimeContext';
 import getRosterContext from '../context/getRosterContext';
@@ -112,7 +113,7 @@ export default function RemoteVideoGroup(props: Props) {
       )}
     >
       {numberOfVisibleIndices === 0 && (
-        <div className={cx('instruction')}>No one is sharing video</div>
+        <div className={cx('instruction')}><FormattedMessage id="RemoteVideoGroup.noVideo" /></div>
       )}
       {Array.from(Array(MAX_REMOTE_VIDEOS).keys()).map((key, index) => {
         const visibleIndex = visibleIndices[index];

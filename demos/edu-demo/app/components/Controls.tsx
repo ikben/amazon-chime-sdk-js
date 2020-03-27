@@ -1,6 +1,7 @@
 import classNames from 'classnames/bind';
 import React, { useContext, useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
+import { useIntl, FormattedMessage } from 'react-intl';
 
 import routes from '../constants/routes.json';
 import getChimeContext from '../context/getChimeContext';
@@ -31,6 +32,7 @@ export default function Controls(props: Props) {
   const [muted, setMuted] = useState(false);
   const [focus, setFocus] = useState(false);
   const [videoStatus, setVideoStatus] = useState(VideoStatus.Disabled);
+  const intl = useIntl();
 
   useEffect(() => {
     const callback = (localMuted: boolean) => {
@@ -53,10 +55,16 @@ export default function Controls(props: Props) {
         audioMuted: muted
       })}
     >
+      <div className={cx('micMuted')}>
+        <FormattedMessage id="Controls.micMutedInScreenViewMode" />
+      </div>
       {state.classMode === ClassMode.Teacher && viewMode === ViewMode.Room && (
         <Tooltip
           placement="top"
-          tooltip={focus ? 'Turn off focus' : 'Turn on focus'}
+          tooltip={focus ? 
+            intl.formatMessage({ id: 'Controls.turnOffFocusTooltip' }) :
+            intl.formatMessage({ id: 'Controls.turnOnFocusTooltip' })
+          }
         >
           <button
             type="button"
@@ -68,7 +76,9 @@ export default function Controls(props: Props) {
               chime.sendMessage('focus', { focus: newFocusState });
               chime.sendMessage('chat-message', {
                 attendeeId: chime.configuration.credentials.attendeeId,
-                message: newFocusState ? 'Focus on' : 'Focus off'
+                message: newFocusState ?
+                  intl.formatMessage({ id: 'Controls.focusOnMessage' }) :
+                  intl.formatMessage({ id: 'Controls.focusOffMessage' })
               });
               setFocus(newFocusState);
             }}
@@ -81,7 +91,10 @@ export default function Controls(props: Props) {
           </button>
         </Tooltip>
       )}
-      <Tooltip placement="top" tooltip={muted ? 'Unmute' : 'Mute'}>
+      <Tooltip placement="top" tooltip={muted ?
+        intl.formatMessage({ id: 'Controls.unmuteTooltip' }) :
+        intl.formatMessage({ id: 'Controls.muteTooltip' })
+      }>
         <button
           type="button"
           className={cx('muteButton', {
@@ -108,8 +121,8 @@ export default function Controls(props: Props) {
         placement="top"
         tooltip={
           videoStatus === VideoStatus.Disabled
-            ? 'Turn on video'
-            : 'Turn off video'
+            ? intl.formatMessage({ id: 'Controls.turnOnVideoTooltip' })
+            : intl.formatMessage({ id: 'Controls.turnOffVideoTooltip' })
         }
       >
         <button
@@ -144,7 +157,7 @@ export default function Controls(props: Props) {
       </Tooltip>
       {state.classMode === ClassMode.Teacher &&
         viewMode !== ViewMode.ScreenShare && (
-          <Tooltip placement="top" tooltip="Share screen">
+          <Tooltip placement="top" tooltip={intl.formatMessage({ id: 'Controls.shareScreenTooltip' })}>
             <button
               type="button"
               className={cx('shareButton')}
@@ -161,8 +174,8 @@ export default function Controls(props: Props) {
           placement="top"
           tooltip={
             state.classMode === ClassMode.Teacher
-              ? 'End classroom'
-              : 'Leave classroom'
+              ? intl.formatMessage({ id: 'Controls.endClassroomTooltip' })
+              : intl.formatMessage({ id: 'Controls.leaveClassroomTooltip' })
           }
         >
           <button
